@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VulnScan — Multi-Model Vulnerability Detector</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --surface: #111827;
+  --surface2: #1a2235;
+  --border: #1e2d45;
+  --accent: #00d4ff;
+  --safe: #10b981;
+  --danger: #ef4444;
+  --warn: #f59e0b;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --code-bg: #0d1117;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Syne',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+body::before {
+  content:''; position:fixed; inset:0;
+  background-image: linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size:40px 40px; pointer-events:none; z-index:0;
+}
+.wrap { max-width:1400px; margin:0 auto; padding:0 20px; position:relative; z-index:1; }
+
+header { padding:18px 0; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.logo { display:flex; align-items:center; gap:10px; }
+.logo-icon { width:38px; height:38px; background:linear-gradient(135deg,#00d4ff,#7c3aed); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.logo-text { font-size:20px; font-weight:800; }
+.logo-text span { color:var(--accent); }
+.model-badge { display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:5px 14px; font-size:11px; font-family:'JetBrains Mono',monospace; }
+.dot { width:7px; height:7px; border-radius:50%; background:var(--warn); animation:pulse 1.5s infinite; }
+.dot.ready { background:var(--safe); animation:none; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.main { padding:24px 0 60px; }
+.subtitle { font-size:12px; color:var(--muted); font-family:'JetBrains Mono',monospace; margin-bottom:20px; }
+.subtitle span { color:var(--accent); }
+
+.tabs { display:flex; gap:3px; margin-bottom:18px; background:var(--surface); padding:3px; border-radius:10px; border:1px solid var(--border); width:fit-content; }
+.tab { padding:7px 18px; border-radius:7px; font-size:12px; font-weight:600; cursor:pointer; color:var(--muted); border:none; background:none; font-family:'Syne',sans-serif; transition:all 0.2s; }
+.tab.active { background:var(--surface2); color:var(--text); }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* Layout: left editor + right results */
+.main-grid { display:grid; grid-template-columns:360px 1fr; gap:16px; }
+@media(max-width:1024px) { .main-grid { grid-template-columns:1fr; } }
+
+.panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+.panel-header { padding:11px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--surface2); }
+.panel-title { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+.panel-sub { font-size:11px; color:var(--muted); font-family:monospace; }
+
+.samples { display:flex; gap:5px; padding:7px 16px; background:var(--surface2); border-bottom:1px solid var(--border); flex-wrap:wrap; }
+.sbtn { font-size:10.5px; padding:3px 9px; background:transparent; border:1px solid var(--border); border-radius:5px; color:var(--muted); cursor:pointer; font-family:'JetBrains Mono',monospace; transition:all 0.2s; }
+.sbtn:hover { border-color:var(--accent); color:var(--accent); }
+
+.code-editor { width:100%; min-height:310px; background:var(--code-bg); border:none; color:#a8ff78; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.7; padding:16px; resize:vertical; outline:none; }
+.code-editor::placeholder { color:#2d3748; }
+
+.btn-analyse { width:100%; padding:12px; background:linear-gradient(135deg,var(--accent),#0099cc); border:none; border-radius:0 0 13px 13px; color:#000; font-family:'Syne',sans-serif; font-size:13px; font-weight:700; letter-spacing:1px; cursor:pointer; transition:all 0.2s; text-transform:uppercase; }
+.btn-analyse:hover { filter:brightness(1.1); }
+.btn-analyse:disabled { opacity:0.5; cursor:not-allowed; }
+
+/* Results right side */
+.results-side { display:flex; flex-direction:column; gap:12px; }
+
+/* Model grid 2x2 */
+.model-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+.model-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.model-card-header { padding:10px 14px; border-bottom:1px solid var(--border); background:var(--surface2); display:flex; align-items:center; justify-content:space-between; }
+.model-name { font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; font-family:'JetBrains Mono',monospace; }
+.model-f1 { font-size:10px; font-family:'JetBrains Mono',monospace; color:var(--muted); }
+.model-body { padding:14px; min-height:120px; }
+
+.verdict-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.verdict-icon { font-size:20px; }
+.verdict-text { font-size:18px; font-weight:800; }
+.conf-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.conf-label { font-size:10px; color:var(--muted); font-family:monospace; width:70px; }
+.conf-bar { flex:1; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden; }
+.conf-fill { height:100%; border-radius:2px; transition:width 0.8s; }
+.conf-pct { font-size:10px; font-family:monospace; color:var(--text); width:40px; text-align:right; }
+.model-note { font-size:10px; color:var(--muted); font-family:monospace; line-height:1.5; }
+
+.token-pills { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+.token-pill { background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.2); color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:10px; padding:2px 6px; border-radius:4px; }
+
+/* Conclusion card */
+.conclusion-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.conclusion-header { padding:12px 16px; border-bottom:1px solid var(--border); background:var(--surface2); display:flex; align-items:center; justify-content:space-between; }
+.conclusion-body { padding:16px; }
+
+.verdict-summary { display:flex; align-items:center; gap:16px; padding:14px 16px; border-radius:10px; margin-bottom:14px; }
+.verdict-big { font-size:26px; font-weight:800; }
+
+.model-votes { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
+.vote-pill { border-radius:8px; padding:8px 10px; text-align:center; border:1px solid; }
+.vote-name { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; font-family:'JetBrains Mono',monospace; margin-bottom:3px; opacity:0.7; }
+.vote-verdict { font-size:12px; font-weight:800; font-family:'JetBrains Mono',monospace; }
+
+.research-finding { border-radius:8px; padding:12px 14px; background:rgba(0,212,255,0.06); border:1px solid rgba(0,212,255,0.2); }
+.finding-label { font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--accent); font-family:'JetBrains Mono',monospace; margin-bottom:6px; }
+.finding-text { font-size:12px; line-height:1.7; color:var(--text); }
+.finding-numbers { display:flex; gap:12px; margin-top:10px; flex-wrap:wrap; }
+.finding-num { background:rgba(0,0,0,0.3); border-radius:6px; padding:5px 10px; font-family:'JetBrains Mono',monospace; font-size:11px; }
+.finding-num span { color:var(--accent); font-weight:700; }
+
+/* Empty state */
+.empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100px; color:var(--muted); gap:6px; }
+.empty-icon { font-size:28px; opacity:0.3; }
+.empty-text { font-size:11px; opacity:0.5; font-family:'JetBrains Mono',monospace; }
+
+/* GitHub */
+.gh-wrap { max-width:680px; padding:18px; }
+.input-group { display:flex; gap:8px; margin-bottom:12px; }
+.input-field { flex:1; background:var(--code-bg); border:1px solid var(--border); border-radius:8px; padding:10px 13px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:12px; outline:none; transition:border-color 0.2s; }
+.input-field:focus { border-color:var(--accent); }
+.input-field::placeholder { color:var(--muted); }
+.btn-sec { padding:10px 16px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:'Syne',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+.btn-sec:hover { background:var(--accent); color:#000; border-color:var(--accent); }
+.sec-label { font-size:10px; font-weight:700; letter-spacing:1.5px; color:var(--muted); text-transform:uppercase; font-family:'JetBrains Mono',monospace; margin-bottom:7px; }
+.search-result { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px 13px; margin-bottom:6px; cursor:pointer; transition:all 0.2s; }
+.search-result:hover { border-color:var(--accent); }
+.result-repo { font-size:10px; color:var(--accent); font-family:monospace; margin-bottom:2px; }
+.result-path { font-size:12px; font-weight:600; }
+
+.spinner { display:inline-block; width:13px; height:13px; border:2px solid rgba(0,212,255,0.3); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:middle; margin-right:6px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🛡</div>
+      <div class="logo-text">Vuln<span>Scan</span></div>
+    </div>
+    <div class="model-badge">
+      <div class="dot" id="statusDot"></div>
+      <span id="statusText" style="color:var(--muted)">Loading CodeBERT...</span>
+    </div>
+  </header>
+
+  <main class="main">
+    <p class="subtitle"><span>▸</span> DCU MSc Practicum — 4-Model Vulnerability Detection Comparison | CodeBERT · GraphCodeBERT · Random Forest · Hybrid</p>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('analyse')">Analyse Code</button>
+      <button class="tab" onclick="switchTab('github')">GitHub Fetch</button>
+      <button class="tab" onclick="switchTab('about')">About</button>
+    </div>
+
+    <!-- ANALYSE TAB -->
+    <div id="tab-analyse" class="tab-content active">
+      <div class="main-grid">
+
+        <!-- Left: Editor -->
+        <div>
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Input Code</span>
+              <span class="panel-sub">C / C++</span>
+            </div>
+            <div class="samples">
+              <span style="font-size:10px;color:var(--muted);align-self:center;margin-right:3px">Sample:</span>
+              <button class="sbtn" onclick="load('buffer')">Buffer Overflow</button>
+              <button class="sbtn" onclick="load('injection')">CMD Injection</button>
+              <button class="sbtn" onclick="load('safe')">Safe Code</button>
+              <button class="sbtn" onclick="load('integer')">Int Overflow</button>
+            </div>
+            <textarea class="code-editor" id="codeInput"
+              placeholder="// Paste your C or C++ code here..."></textarea>
+            <button class="btn-analyse" id="analyseBtn" onclick="analyse()">
+              ⚡ Analyse with All 4 Models
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Results -->
+        <div class="results-side">
+
+          <!-- 4 model cards -->
+          <div class="model-grid">
+            <!-- CodeBERT -->
+            <div class="model-card">
+              <div class="model-card-header">
+                <span class="model-name" style="color:#00d4ff">CodeBERT</span>
+                <span class="model-f1" id="cb-f1">F1 = 0.979 on Juliet</span>
+              </div>
+              <div class="model-body" id="cb-body">
+                <div class="empty-state"><div class="empty-icon">🤖</div><div class="empty-text">awaiting analysis</div></div>
+              </div>
+            </div>
+
+            <!-- GraphCodeBERT -->
+            <div class="model-card">
+              <div class="model-card-header">
+                <span class="model-name" style="color:#7c3aed">GraphCodeBERT</span>
+                <span class="model-f1" id="gcb-f1">F1 = 1.000 on Juliet</span>
+              </div>
+              <div class="model-body" id="gcb-body">
+                <div class="empty-state"><div class="empty-icon">🕸</div><div class="empty-text">awaiting analysis</div></div>
+              </div>
+            </div>
+
+            <!-- Random Forest -->
+            <div class="model-card">
+              <div class="model-card-header">
+                <span class="model-name" style="color:#10b981">Random Forest</span>
+                <span class="model-f1" id="rf-f1">F1 = 1.000 on Juliet</span>
+              </div>
+              <div class="model-body" id="rf-body">
+                <div class="empty-state"><div class="empty-icon">🌲</div><div class="empty-text">awaiting analysis</div></div>
+              </div>
+            </div>
+
+            <!-- Hybrid -->
+            <div class="model-card">
+              <div class="model-card-header">
+                <span class="model-name" style="color:#f59e0b">Hybrid Model</span>
+                <span class="model-f1" id="h-f1">F1 = ~1.000 on Juliet</span>
+              </div>
+              <div class="model-body" id="h-body">
+                <div class="empty-state"><div class="empty-icon">⚡</div><div class="empty-text">awaiting analysis</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Conclusion card -->
+          <div class="conclusion-card" id="conclusionCard" style="display:none;">
+            <div class="conclusion-header">
+              <span class="panel-title">Research Conclusion</span>
+              <span style="font-size:10px;font-family:monospace;color:var(--accent)">All 4 models evaluated</span>
+            </div>
+            <div class="conclusion-body" id="conclusionBody"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- GITHUB TAB -->
+    <div id="tab-github" class="tab-content">
+      <div class="panel" style="max-width:680px;">
+        <div class="panel-header"><span class="panel-title">Fetch from GitHub</span></div>
+        <div class="gh-wrap">
+          <div class="sec-label">Paste a GitHub file URL</div>
+          <div class="input-group">
+            <input class="input-field" id="githubUrl" placeholder="https://github.com/owner/repo/blob/main/file.c" onkeydown="if(event.key==='Enter')fetchGH()"/>
+            <button class="btn-sec" onclick="fetchGH()">Fetch</button>
+          </div>
+          <div style="margin:14px 0;display:flex;align-items:center;gap:10px;">
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+            <span style="font-size:10px;color:var(--muted);font-family:monospace">OR SEARCH</span>
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+          </div>
+          <div class="sec-label">Search GitHub for C/C++ files</div>
+          <div class="input-group">
+            <input class="input-field" id="searchQ" placeholder="e.g. strcpy buffer overflow" onkeydown="if(event.key==='Enter')searchGH()"/>
+            <button class="btn-sec" onclick="searchGH()">Search</button>
+          </div>
+          <div id="searchResults"></div>
+          <div id="fetchedBlock" style="display:none;">
+            <div class="sec-label" style="margin-top:14px;">Fetched Code</div>
+            <textarea class="code-editor" id="fetchedCode" style="border-radius:8px;border:1px solid var(--border);min-height:160px;"></textarea>
+            <button class="btn-sec" onclick="sendToAnalyser()" style="width:100%;margin-top:8px;padding:10px;text-align:center;">→ Send to Analyser</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT TAB -->
+    <div id="tab-about" class="tab-content">
+      <div class="panel" style="max-width:700px;">
+        <div class="panel-header"><span class="panel-title">About This Tool</span></div>
+        <div style="padding:20px;line-height:1.8;font-size:13px;color:var(--muted);">
+          <p style="color:var(--text);font-weight:700;font-size:15px;margin-bottom:10px;">Automated Software Vulnerability Detection Using Hybrid LLMs</p>
+          <p style="margin-bottom:10px;">MSc Computing in Data Analytics<br>
+          Anonymized for review</p>
+          <div style="background:var(--code-bg);border-radius:8px;padding:14px;font-family:monospace;font-size:11.5px;margin-bottom:10px;">
+            Random Forest (TF-IDF)  →  F1 = 1.000 on Juliet<br>
+            CodeBERT (125M params)  →  F1 = 0.979 on Juliet<br>
+            GraphCodeBERT           →  F1 = 1.000 on Juliet<br>
+            Hybrid (CB + GCB)       →  F1 = ~1.000 on Juliet<br>
+            ─────────────────────────────────────────<br>
+            External stress test    →  61.5% on real code<br>
+            Faithfulness delta      →  0.000005
+          </div>
+          <p style="margin-bottom:8px;color:var(--text);font-weight:600;">Central Finding</p>
+          <p style="margin-bottom:10px;">All four models achieve near-perfect scores on Juliet due to three structural artefacts: a 4.2x code length gap, zero function name overlap between classes, and comment leakage. External stress test reveals only 61.5% accuracy on real code.</p>
+          <p style="color:var(--accent);font-family:monospace;font-size:11px;">Submission: 10 June 2026</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const SAMPLES = {
+  buffer: `// CWE-121: Stack Buffer Overflow
+void processInput(char *userInput) {
+    char buffer[16];
+    strcpy(buffer, userInput);  // UNSAFE
+    printf("Processed: %s\\n", buffer);
+}`,
+  injection: `// CWE-78: OS Command Injection
+void runQuery(const char *filename) {
+    char command[256];
+    sprintf(command, "cat /data/%s", filename);
+    system(command);  // UNSAFE
+}`,
+  safe: `// Safe bounded string operations
+void safeCopy(const char *src) {
+    char dest[64];
+    strncpy(dest, src, sizeof(dest) - 1);
+    dest[sizeof(dest) - 1] = '\\0';
+    printf("Copied: %s\\n", dest);
+}`,
+  integer: `// CWE-190: Integer Overflow
+void allocBuffer(int width, int height) {
+    int size = width * height;  // can overflow
+    char *buf = malloc(size);
+    memset(buf, 0, size);
+    free(buf);
+}`
+};
+
+function load(n) { document.getElementById('codeInput').value = SAMPLES[n]||''; }
+function switchTab(n) {
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['analyse','github','about'][i]===n));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
+}
+
+async function checkStatus() {
+  try {
+    const r = await fetch('/model_status');
+    const d = await r.json();
+    const dot = document.getElementById('statusDot');
+    const txt = document.getElementById('statusText');
+    if (d.loaded) { dot.className='dot ready'; txt.textContent='CodeBERT Ready'; txt.style.color='#10b981'; }
+    else if (d.error) { dot.style.background='#ef4444'; txt.textContent='Model error'; txt.style.color='#ef4444'; }
+    else setTimeout(checkStatus, 3000);
+  } catch(e) { setTimeout(checkStatus, 3000); }
+}
+checkStatus();
+
+async function analyse() {
+  const code = document.getElementById('codeInput').value.trim();
+  if (!code) return;
+  const btn = document.getElementById('analyseBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Analysing with 4 models...';
+  const loading = `<div class="empty-state"><div class="spinner" style="width:22px;height:22px;border-width:2px;"></div></div>`;
+  ['cb','gcb','rf','h'].forEach(id=>document.getElementById(id+'-body').innerHTML=loading);
+  document.getElementById('conclusionCard').style.display='none';
+
+  try {
+    const res = await fetch('/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})});
+    const data = await res.json();
+    renderModel('cb', data.codebert, 'CodeBERT');
+    renderModel('gcb', data.graphcodebert, 'GraphCodeBERT');
+    renderModel('rf', data.rf, 'Random Forest');
+    renderModel('h', data.hybrid, 'Hybrid');
+    renderConclusion(data);
+  } catch(e) {
+    ['cb','gcb','rf','h'].forEach(id=>{
+      document.getElementById(id+'-body').innerHTML=`<div class="empty-state"><div class="empty-text" style="color:var(--danger)">${e.message}</div></div>`;
+    });
+  } finally {
+    btn.disabled=false; btn.innerHTML='⚡ Analyse with All 4 Models';
+  }
+}
+
+function renderModel(id, data, name) {
+  const body = document.getElementById(id+'-body');
+  if (!data || data.error) {
+    body.innerHTML=`<div class="empty-state"><div class="empty-text" style="color:var(--warn)">${data?data.error:'Not available'}</div></div>`;
+    return;
+  }
+  const isVuln = data.verdict === 'VULNERABLE';
+  const icon = isVuln ? '⚠️' : '✅';
+  let html = `<div class="verdict-row">
+    <div class="verdict-icon">${icon}</div>
+    <div class="verdict-text" style="color:${data.color}">${data.verdict}</div>
+  </div>
+  <div class="conf-row">
+    <div class="conf-label">Confidence</div>
+    <div class="conf-bar"><div class="conf-fill" style="width:${data.confidence}%;background:${data.color}"></div></div>
+    <div class="conf-pct">${data.confidence}%</div>
+  </div>`;
+  if (data.note) html += `<div class="model-note">${data.note}</div>`;
+  if (data.top_tokens && data.top_tokens.length) {
+    html += `<div class="model-note" style="margin-top:6px;">Attention tokens:</div>
+    <div class="token-pills">${data.top_tokens.slice(0,6).map(t=>`<span class="token-pill">${t}</span>`).join('')}</div>`;
+  }
+  body.innerHTML = html;
+}
+
+function renderConclusion(data) {
+  const models = [
+    {name:'CodeBERT', data:data.codebert, color:'#00d4ff'},
+    {name:'GraphCodeBERT', data:data.graphcodebert, color:'#7c3aed'},
+    {name:'Random Forest', data:data.rf, color:'#10b981'},
+    {name:'Hybrid', data:data.hybrid, color:'#f59e0b'},
+  ];
+
+  const votes = models.filter(m=>m.data&&!m.data.error).map(m=>m.data.verdict);
+  const vulnVotes = votes.filter(v=>v==='VULNERABLE').length;
+  const totalVotes = votes.length;
+  const consensus = vulnVotes > totalVotes/2 ? 'VULNERABLE' : 'SAFE';
+  const consensusColor = consensus==='VULNERABLE' ? '#ef4444' : '#10b981';
+  const consensusBg = consensus==='VULNERABLE' ? '#ef444418' : '#10b98118';
+  const consensusBorder = consensus==='VULNERABLE' ? '#ef444444' : '#10b98144';
+
+  let html = `<div class="verdict-summary" style="background:${consensusBg};border:1px solid ${consensusBorder};">
+    <div style="font-size:32px">${consensus==='VULNERABLE'?'⚠️':'✅'}</div>
+    <div>
+      <div style="font-size:11px;color:var(--muted);font-family:monospace;letter-spacing:1px;margin-bottom:4px;">CONSENSUS VERDICT</div>
+      <div class="verdict-big" style="color:${consensusColor}">${consensus}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px;">${vulnVotes}/${totalVotes} models agree</div>
+    </div>
+  </div>`;
+
+  html += `<div class="model-votes">`;
+  models.forEach(m=>{
+    if (!m.data||m.data.error) return;
+    const v = m.data.verdict;
+    const c = v==='VULNERABLE'?'#ef4444':'#10b981';
+    html += `<div class="vote-pill" style="background:${c}12;border-color:${c}33;">
+      <div class="vote-name" style="color:${m.color}">${m.name}</div>
+      <div class="vote-verdict" style="color:${c}">${v==='VULNERABLE'?'VULN':'SAFE'}</div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  const isReallyVuln = data.rule_based && data.rule_based.vulnerabilities && data.rule_based.vulnerabilities.length > 0;
+  const isSafeCode = data.rule_based && data.rule_based.safe_indicators >= 2 && !isReallyVuln;
+
+  html += `<div class="research-finding">
+    <div class="finding-label">▸ Research Finding</div>`;
+
+  if (isSafeCode && consensus === 'VULNERABLE') {
+    html += `<div class="finding-text">
+      <strong style="color:#ef4444">This code is actually safe</strong> — it uses bounded string operations correctly.
+      Yet ${vulnVotes} of ${totalVotes} models predict VULNERABLE. This is the <strong style="color:var(--accent)">token-bias failure</strong>
+      the dissertation documents: models learned that <em>strcpy-like tokens = vulnerable</em>
+      rather than understanding whether the usage is actually dangerous.
+      This explains why F1 = 1.000 on Juliet but only 61.5% on real code.
+    </div>`;
+  } else if (isReallyVuln && consensus === 'VULNERABLE') {
+    html += `<div class="finding-text">
+      All ${vulnVotes} models correctly identify this as vulnerable. Despite their near-perfect F1 scores on the Juliet benchmark,
+      this agreement is <strong style="color:var(--accent)">not evidence of semantic understanding</strong> —
+      it may reflect the same token-bias that produces inflated benchmark scores.
+      The external stress test (61.5% real-world accuracy) confirms this limitation.
+    </div>`;
+  } else {
+    html += `<div class="finding-text">
+      Models show mixed predictions. This reflects the uncertainty inherent in vulnerability detection
+      when surface-level features are ambiguous. All four models were trained on the Juliet benchmark
+      where structural artefacts make classification trivial — real-world generalisation is harder.
+    </div>`;
+  }
+
+  html += `<div class="finding-numbers">
+    <div class="finding-num">Juliet F1 <span>0.979–1.000</span></div>
+    <div class="finding-num">Real-world <span>61.5%</span></div>
+    <div class="finding-num">Faithfulness Δ <span>0.000005</span></div>
+    <div class="finding-num">Training samples <span>73,295</span></div>
+  </div>`;
+
+  html += `</div>`;
+
+  if (data.rule_based && data.rule_based.vulnerabilities && data.rule_based.vulnerabilities.length > 0) {
+    html += `<div style="margin-top:12px;">`;
+    data.rule_based.vulnerabilities.forEach(v=>{
+      html += `<div style="background:${v.color}10;border:1px solid ${v.color}33;border-radius:8px;padding:10px 12px;margin-bottom:6px;">
+        <div style="font-size:11px;font-weight:700;color:${v.color};font-family:monospace;margin-bottom:4px;">${v.name} <span style="float:right;font-size:9px;background:${v.color}22;padding:2px 6px;border-radius:4px;">${v.severity}</span></div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:5px;">${v.what}</div>
+        <div style="font-size:11px;font-family:monospace;background:rgba(0,0,0,0.3);padding:6px 8px;border-radius:5px;">Fix: ${v.fix}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  document.getElementById('conclusionBody').innerHTML = html;
+  document.getElementById('conclusionCard').style.display = 'block';
+}
+
+async function fetchGH() {
+  const url = document.getElementById('githubUrl').value.trim();
+  if (!url) return;
+  const res = await fetch('/fetch_github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+  const data = await res.json();
+  if (data.error) { alert('Error: '+data.error); return; }
+  document.getElementById('fetchedCode').value = data.code;
+  document.getElementById('fetchedBlock').style.display = 'block';
+}
+
+async function searchGH() {
+  const q = document.getElementById('searchQ').value.trim();
+  if (!q) return;
+  const c = document.getElementById('searchResults');
+  c.innerHTML = '<div style="color:var(--muted);font-size:11px;padding:6px"><span class="spinner"></span>Searching...</div>';
+  const res = await fetch('/search_github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q})});
+  const data = await res.json();
+  if (data.error) { c.innerHTML=`<div style="color:var(--danger);font-size:11px;">${data.error}</div>`; return; }
+  c.innerHTML = (data.results||[]).map(r=>`
+    <div class="search-result" onclick="loadResult('${r.url}')">
+      <div class="result-repo">${r.repo}</div>
+      <div class="result-path">${r.path}</div>
+    </div>`).join('');
+}
+
+function loadResult(url) {
+  document.getElementById('githubUrl').value = url;
+  fetchGH();
+}
+
+function sendToAnalyser() {
+  document.getElementById('codeInput').value = document.getElementById('fetchedCode').value;
+  switchTab('analyse');
+  setTimeout(analyse, 300);
+}
+</script>
+</body>
+</html>

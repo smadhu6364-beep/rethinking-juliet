@@ -1,0 +1,25 @@
+{
+  "model": "microsoft/codebert-base",
+  "checkpoint": "experiments/codebert-full",
+  "data": "train_dedup (full) + val_dedup (full) + test_dedup (full), post label-fix",
+  "train_samples": 20617,
+  "val_samples": 2577,
+  "test_samples": 2578,
+  "epochs": 3,
+  "batch_size": 16,
+  "learning_rate": 2e-05,
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "confusion_matrix": [
+    [
+      1931,
+      0
+    ],
+    [
+      0,
+      647
+    ]
+  ]
+}

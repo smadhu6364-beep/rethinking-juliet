@@ -1,0 +1,294 @@
+{
+  "timestamp": "2026-07-20T08:29:19.984129",
+  "total_samples": 35,
+  "overall_correct": 17,
+  "overall_accuracy": 0.4857,
+  "by_category": {
+    "juliet_style": "0/10",
+    "real_world": "0/8",
+    "safe_lookalike": "10/10",
+    "trick": "7/7"
+  },
+  "per_sample": [
+    {
+      "id": "A01_strcpy_overflow",
+      "category": "juliet_style",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "A02_gets_overflow",
+      "category": "juliet_style",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "A03_sprintf_overflow",
+      "category": "juliet_style",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "A04_system_injection",
+      "category": "juliet_style",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "A05_int_overflow_alloc",
+      "category": "juliet_style",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "A06_strcat_overflow",
+      "category": "juliet_style",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "A07_memcpy_overflow",
+      "category": "juliet_style",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "A08_scanf_overflow",
+      "category": "juliet_style",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "A09_int_underflow",
+      "category": "juliet_style",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "A10_use_after_free",
+      "category": "juliet_style",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "B01_format_string",
+      "category": "real_world",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "B02_toctou_race",
+      "category": "real_world",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "B03_path_traversal",
+      "category": "real_world",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "B04_off_by_one",
+      "category": "real_world",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "B05_null_deref",
+      "category": "real_world",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "B06_double_free",
+      "category": "real_world",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "B07_signed_unsigned",
+      "category": "real_world",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "B08_unchecked_malloc",
+      "category": "real_world",
+      "true_label": 1,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": false
+    },
+    {
+      "id": "C01_safe_fgets",
+      "category": "safe_lookalike",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "id": "C02_safe_strncpy",
+      "category": "safe_lookalike",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "id": "C03_safe_snprintf",
+      "category": "safe_lookalike",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "id": "C04_safe_memcpy_checked",
+      "category": "safe_lookalike",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "id": "C05_safe_strcpy_constant",
+      "category": "safe_lookalike",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "id": "C06_safe_malloc_checked",
+      "category": "safe_lookalike",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "id": "C07_safe_free_once",
+      "category": "safe_lookalike",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "id": "C08_safe_scanf_width",
+      "category": "safe_lookalike",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "id": "C09_safe_strcat_bounded",
+      "category": "safe_lookalike",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "id": "C10_safe_fprintf_literal",
+      "category": "safe_lookalike",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "id": "D01_empty_function",
+      "category": "trick",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 0.6928,
+      "correct": true
+    },
+    {
+      "id": "D02_pure_arithmetic",
+      "category": "trick",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "id": "D03_string_constants",
+      "category": "trick",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 0.9996,
+      "correct": true
+    },
+    {
+      "id": "D04_simple_getter",
+      "category": "trick",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 0.9997,
+      "correct": true
+    },
+    {
+      "id": "D05_boolean_logic",
+      "category": "trick",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 0.9994,
+      "correct": true
+    },
+    {
+      "id": "D06_loop_counter",
+      "category": "trick",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    },
+    {
+      "id": "D07_comment_flaw_word",
+      "category": "trick",
+      "true_label": 0,
+      "predicted": 0,
+      "confidence": 1.0,
+      "correct": true
+    }
+  ]
+}

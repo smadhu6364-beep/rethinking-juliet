@@ -1,0 +1,22 @@
+{
+  "model": "random_forest_baseline_csharp",
+  "data": "multilang/csharp train + val + test (real Juliet csharp source)",
+  "train_samples": 71029,
+  "val_samples": 8879,
+  "test_samples": 8879,
+  "accuracy": 0.9993242482261516,
+  "precision": 0.9997114829774957,
+  "recall": 0.9985590778097982,
+  "f1": 0.9991349480968859,
+  "roc_auc": 0.9999987745901137,
+  "confusion_matrix": [
+    [
+      5408,
+      1
+    ],
+    [
+      5,
+      3465
+    ]
+  ]
+}

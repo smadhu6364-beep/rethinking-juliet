@@ -1,0 +1,77 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+venv/
+env/
+.venv/
+
+# Datasets — too big for git, kept on Drive
+data/raw/
+data/processed/
+*.csv
+*.tsv
+*.parquet
+*.pkl
+*.zip
+*.tar.gz
+# Same size/policy as *.parquet above, just a different suffix (pre-leakage-fix
+# backups of the split parquet files) -- data/processed/ backups are already
+# covered by the directory rule above; this covers data/splits/ specifically.
+# Does NOT match results/*.BEFORE_leakage_fix.json (small JSON evidence files,
+# meant to be committed).
+data/splits/*.BEFORE_leakage_fix
+
+# LaTeX build artifacts
+Practicum/*.aux
+Practicum/*.log
+Practicum/*.out
+Practicum/*.fls
+Practicum/*.fdb_latexmk
+Practicum/*.synctex.gz
+
+# Models — too big for git
+*.pt
+*.bin
+*.safetensors
+models/checkpoints/
+
+
+# Experiment outputs
+experiments/
+logs/
+experiments/results/*.csv
+experiments/results/*.json
+experiments/logs/
+wandb/
+
+
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.txt
+*.key
+api_keys.txt
+rq3_reviewer/credentials/
+rq3_reviewer/ratings_data.json
+
+# AI-session prompt/scratch artifacts — not project deliverables
+*prompt*.md
+meeting_prep_output.md
+
+# Allow UI files
+!vulnscan_ui/
+!vulnscan_ui/**/*.py
+!vulnscan_ui/**/*.html
+!vulnscan_ui/**/*.txt

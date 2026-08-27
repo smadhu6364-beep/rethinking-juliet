@@ -1,0 +1,168 @@
+{
+  "total": 32,
+  "passes": 31,
+  "fails": 1,
+  "warnings": 0,
+  "details": [
+    {
+      "status": "[PASS]",
+      "check": "Full Juliet parquet",
+      "message": "116,263 rows, balance {1: 0.667, 0: 0.333}"
+    },
+    {
+      "status": "[PASS]",
+      "check": "train_dedup.parquet",
+      "message": "73,295 rows, 57.77% vulnerable"
+    },
+    {
+      "status": "[PASS]",
+      "check": "val_dedup.parquet",
+      "message": "9,162 rows, 57.74% vulnerable"
+    },
+    {
+      "status": "[PASS]",
+      "check": "test_dedup.parquet",
+      "message": "9,162 rows, 57.80% vulnerable"
+    },
+    {
+      "status": "[PASS]",
+      "check": "Zero train/val overlap",
+      "message": "0 overlapping codes"
+    },
+    {
+      "status": "[PASS]",
+      "check": "Zero train/test overlap",
+      "message": "0 overlapping codes"
+    },
+    {
+      "status": "[PASS]",
+      "check": "Broken file deleted: train_clean.parquet",
+      "message": "correctly deleted"
+    },
+    {
+      "status": "[PASS]",
+      "check": "Broken file deleted: val_clean.parquet",
+      "message": "correctly deleted"
+    },
+    {
+      "status": "[PASS]",
+      "check": "Broken file deleted: test_clean.parquet",
+      "message": "correctly deleted"
+    },
+    {
+      "status": "[PASS]",
+      "check": "Code length gap (4x)",
+      "message": "vulnerable=429 chars, safe=101 chars, ratio=4.2x"
+    },
+    {
+      "status": "[PASS]",
+      "check": "Zero function name overlap",
+      "message": "0 shared names across 42,005 unique names"
+    },
+    {
+      "status": "[PASS]",
+      "check": "CodeBERT checkpoint dir",
+      "message": "exists (4 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "CodeBERT F1 on dedup test",
+      "message": "F1=0.9789, Acc=0.975, P=0.9587, R=1.0"
+    },
+    {
+      "status": "[PASS]",
+      "check": "GraphCodeBERT evaluation",
+      "message": "F1=1.0"
+    },
+    {
+      "status": "[PASS]",
+      "check": "Random Forest evaluation",
+      "message": "F1=1.0"
+    },
+    {
+      "status": "[PASS]",
+      "check": "external_eval_results.txt",
+      "message": "exists (2 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "leakage_diagnostics.txt",
+      "message": "exists (8 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "rq3_results.json",
+      "message": "exists (33 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "faithfulness_results.json",
+      "message": "exists (5 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "codebert_test_evaluation.json",
+      "message": "exists (0 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "RQ3 pipeline accuracy",
+      "message": "12/20 correct (60.0%)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "Faithfulness delta near zero",
+      "message": "Average delta=0.000005 across 20 samples"
+    },
+    {
+      "status": "[PASS]",
+      "check": "external_eval.py",
+      "message": "exists (6 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "diagnose_leakage.py",
+      "message": "exists (1 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "evaluate_codebert.py",
+      "message": "exists (3 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "evaluate_rf.py",
+      "message": "exists (2 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "rebuild_splits_clean.py",
+      "message": "exists (3 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "train_codebert.py",
+      "message": "exists (4 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "train_graphcodebert.py",
+      "message": "exists (4 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "rq3-design.md",
+      "message": "exists (24 KB)"
+    },
+    {
+      "status": "[PASS]",
+      "check": "Correct git branch",
+      "message": "On branch: indu/rq3-design"
+    },
+    {
+      "status": "[FAIL]",
+      "check": "Clean working tree",
+      "message": "Uncommitted changes: M results/verification_report.json\n?? fix_issues.md"
+    }
+  ]
+}

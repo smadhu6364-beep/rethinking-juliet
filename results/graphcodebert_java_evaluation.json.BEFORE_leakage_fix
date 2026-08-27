@@ -1,0 +1,26 @@
+{
+  "model": "graphcodebert_java",
+  "base_model": "microsoft/graphcodebert-base",
+  "checkpoint": "experiments/graphcodebert-java",
+  "data": "multilang/java train + val + test (real Juliet java source)",
+  "train_samples": 53985,
+  "val_samples": 6748,
+  "test_samples": 6749,
+  "epochs": 3,
+  "batch_size": 16,
+  "learning_rate": 2e-05,
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "confusion_matrix": [
+    [
+      4166,
+      0
+    ],
+    [
+      0,
+      2583
+    ]
+  ]
+}

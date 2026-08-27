@@ -1,0 +1,15 @@
+{
+  "model": "hybrid_codebert_graphcodebert",
+  "data": "train_dedup + val_dedup (debug subset: 2000 train / 500 val)",
+  "train_samples": 2000,
+  "val_samples": 500,
+  "eval_loss": 0.6038007736206055,
+  "eval_accuracy": 0.848,
+  "eval_precision": 0.0,
+  "eval_recall": 0.0,
+  "eval_f1": 0.0,
+  "eval_runtime": 316.8127,
+  "eval_samples_per_second": 1.578,
+  "eval_steps_per_second": 0.789,
+  "epoch": 1.0
+}

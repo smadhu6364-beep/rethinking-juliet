@@ -1,0 +1,20 @@
+{
+  "model": "random_forest_baseline",
+  "data": "train_dedup + test_dedup",
+  "train_samples": 73295,
+  "test_samples": 9162,
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "confusion_matrix": [
+    [
+      3866,
+      0
+    ],
+    [
+      0,
+      5296
+    ]
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "model": "random_forest_baseline_java",
+  "data": "multilang/java train + val + test (real Juliet java source)",
+  "train_samples": 26808,
+  "val_samples": 3351,
+  "test_samples": 3351,
+  "accuracy": 0.9850790808713816,
+  "precision": 0.9826749826749827,
+  "recall": 0.9826749826749827,
+  "f1": 0.9826749826749827,
+  "roc_auc": 0.99793752388092,
+  "confusion_matrix": [
+    [
+      1883,
+      25
+    ],
+    [
+      25,
+      1418
+    ]
+  ],
+  "trained_at_utc": "2026-07-11T17:22:47.776473+00:00",
+  "checkpoint_dir": "experiments\\rf-full-java"
+}

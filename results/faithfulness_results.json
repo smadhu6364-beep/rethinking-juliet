@@ -1,0 +1,202 @@
+[
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE121_v1",
+    "expected": "VULNERABLE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE121_v2",
+    "expected": "VULNERABLE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE121_v3",
+    "expected": "VULNERABLE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE121_s1",
+    "expected": "SAFE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE121_s2",
+    "expected": "SAFE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE78_v1",
+    "expected": "VULNERABLE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE78_v2",
+    "expected": "VULNERABLE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9998,
+    "confidence_delta": 0.0001,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE78_v3",
+    "expected": "VULNERABLE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE78_s1",
+    "expected": "SAFE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE78_s2",
+    "expected": "SAFE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE190_v1",
+    "expected": "VULNERABLE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE190_v2",
+    "expected": "VULNERABLE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE190_v3",
+    "expected": "VULNERABLE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE190_s1",
+    "expected": "SAFE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE190_s2",
+    "expected": "SAFE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE191_v1",
+    "expected": "VULNERABLE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE191_v2",
+    "expected": "VULNERABLE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE191_v3",
+    "expected": "VULNERABLE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE191_s1",
+    "expected": "SAFE"
+  },
+  {
+    "original_prediction": "VULNERABLE",
+    "original_confidence": 0.9999,
+    "masked_confidence": 0.9999,
+    "confidence_delta": 0.0,
+    "prediction_changed": false,
+    "tokens_masked": 3,
+    "sample_id": "CWE191_s2",
+    "expected": "SAFE"
+  }
+]

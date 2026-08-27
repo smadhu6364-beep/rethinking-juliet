@@ -1,0 +1,23 @@
+{
+  "model": "random_forest_baseline",
+  "data": "train_dedup + test_dedup",
+  "train_samples": 20617,
+  "test_samples": 2578,
+  "accuracy": 0.9996121024049651,
+  "precision": 0.9984567901234568,
+  "recall": 1.0,
+  "f1": 0.9992277992277993,
+  "roc_auc": 0.9999231604737477,
+  "confusion_matrix": [
+    [
+      1930,
+      1
+    ],
+    [
+      0,
+      647
+    ]
+  ],
+  "trained_at_utc": "2026-07-11T17:22:29.491378+00:00",
+  "checkpoint_dir": "experiments\\rf-full"
+}

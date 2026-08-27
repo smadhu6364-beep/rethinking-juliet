@@ -1,0 +1,134 @@
+[
+  {
+    "model": "Random Forest",
+    "language": "C/C++",
+    "train_samples": 20617,
+    "test_samples": 2578,
+    "accuracy": 0.9996,
+    "precision": 0.9985,
+    "recall": 1.0,
+    "f1": 0.9992,
+    "source_file": "results/rf_baseline_evaluation.AFTER_label_fix.json"
+  },
+  {
+    "model": "Random Forest",
+    "language": "Java",
+    "train_samples": 26808,
+    "test_samples": 3351,
+    "accuracy": 0.9851,
+    "precision": 0.9827,
+    "recall": 0.9827,
+    "f1": 0.9827,
+    "source_file": "results/rf_baseline_java_evaluation.json"
+  },
+  {
+    "model": "Random Forest",
+    "language": "C#",
+    "train_samples": 35131,
+    "test_samples": 4392,
+    "accuracy": 0.9888,
+    "precision": 0.991,
+    "recall": 0.9833,
+    "f1": 0.9871,
+    "source_file": "results/rf_baseline_csharp_evaluation.json"
+  },
+  {
+    "model": "CodeBERT",
+    "language": "C/C++",
+    "train_samples": 20617,
+    "test_samples": 2578,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "source_file": "results/codebert_evaluation.AFTER_label_fix.json"
+  },
+  {
+    "model": "CodeBERT",
+    "language": "Java",
+    "train_samples": 26808,
+    "test_samples": 3351,
+    "accuracy": 0.9976,
+    "precision": 0.9965,
+    "recall": 0.9979,
+    "f1": 0.9972,
+    "source_file": "results/codebert_java_evaluation.json"
+  },
+  {
+    "model": "CodeBERT",
+    "language": "C#",
+    "train_samples": 35131,
+    "test_samples": 4392,
+    "accuracy": 0.9973,
+    "precision": 0.9969,
+    "recall": 0.9969,
+    "f1": 0.9969,
+    "source_file": "results/codebert_csharp_evaluation.json"
+  },
+  {
+    "model": "GraphCodeBERT",
+    "language": "C/C++",
+    "train_samples": 20617,
+    "test_samples": 2578,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "source_file": "results/graphcodebert_evaluation.AFTER_label_fix.json"
+  },
+  {
+    "model": "GraphCodeBERT",
+    "language": "Java",
+    "train_samples": 26808,
+    "test_samples": 3351,
+    "accuracy": 0.9958,
+    "precision": 0.9945,
+    "recall": 0.9958,
+    "f1": 0.9952,
+    "source_file": "results/graphcodebert_java_evaluation.json"
+  },
+  {
+    "model": "GraphCodeBERT",
+    "language": "C#",
+    "train_samples": 35131,
+    "test_samples": 4392,
+    "accuracy": 0.998,
+    "precision": 0.9964,
+    "recall": 0.999,
+    "f1": 0.9977,
+    "source_file": "results/graphcodebert_csharp_evaluation.json"
+  },
+  {
+    "model": "Hybrid",
+    "language": "C/C++",
+    "train_samples": 20617,
+    "test_samples": 2578,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "source_file": "results/hybrid_evaluation.AFTER_label_fix.json"
+  },
+  {
+    "model": "Hybrid",
+    "language": "Java",
+    "train_samples": 26808,
+    "test_samples": 3351,
+    "accuracy": 0.8851,
+    "precision": 0.8936,
+    "recall": 0.8323,
+    "f1": 0.8619,
+    "source_file": "results/hybrid_java_evaluation.json"
+  },
+  {
+    "model": "Hybrid",
+    "language": "C#",
+    "train_samples": 35131,
+    "test_samples": 4392,
+    "accuracy": 0.9599,
+    "precision": 0.9812,
+    "recall": 0.9258,
+    "f1": 0.9527,
+    "source_file": "results/hybrid_csharp_evaluation.json"
+  }
+]

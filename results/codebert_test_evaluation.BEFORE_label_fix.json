@@ -1,0 +1,21 @@
+{
+  "model": "codebert-test",
+  "data": "test_dedup.parquet",
+  "n_samples": 1000,
+  "accuracy": 0.975,
+  "precision": 0.9587,
+  "recall": 1.0,
+  "f1": 0.9789,
+  "confusion_matrix": [
+    [
+      394,
+      25
+    ],
+    [
+      0,
+      581
+    ]
+  ],
+  "predicted_vulnerable": 606,
+  "predicted_safe": 394
+}

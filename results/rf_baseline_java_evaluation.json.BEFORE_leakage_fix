@@ -1,0 +1,22 @@
+{
+  "model": "random_forest_baseline_java",
+  "data": "multilang/java train + val + test (real Juliet java source)",
+  "train_samples": 73891,
+  "val_samples": 9236,
+  "test_samples": 9237,
+  "accuracy": 0.9994586987117029,
+  "precision": 0.9994194484760522,
+  "recall": 0.9991294254207778,
+  "f1": 0.9992744159048034,
+  "roc_auc": 0.9999977450149045,
+  "confusion_matrix": [
+    [
+      5789,
+      2
+    ],
+    [
+      3,
+      3443
+    ]
+  ]
+}

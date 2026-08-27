@@ -1,0 +1,26 @@
+{
+  "model": "graphcodebert_csharp",
+  "base_model": "microsoft/graphcodebert-base",
+  "checkpoint": "experiments/graphcodebert-csharp",
+  "data": "multilang/csharp train + val + test (real Juliet csharp source)",
+  "train_samples": 71029,
+  "val_samples": 8879,
+  "test_samples": 8879,
+  "epochs": 3,
+  "batch_size": 16,
+  "learning_rate": 2e-05,
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "confusion_matrix": [
+    [
+      5409,
+      0
+    ],
+    [
+      0,
+      3470
+    ]
+  ]
+}

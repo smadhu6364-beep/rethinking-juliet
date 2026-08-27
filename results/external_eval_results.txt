@@ -1,0 +1,65 @@
+python external_eval.py
+Loading tokenizer and model...
+Loading weights: 100%|██████████████████████████████████| 201/201 [00:00<00:00, 3580.86it/s]
+
+================================================================================
+EXTERNAL STRESS TEST — model trained on Juliet only
+================================================================================
+
+[juliet_style] Classic strcpy buffer overflow
+   Expected: VULNERABLE  | Predicted: VULNERABLE  (1.0000) ✓
+
+[juliet_style] gets() — unsafe input
+   Expected: VULNERABLE  | Predicted: VULNERABLE  (1.0000) ✓
+
+[juliet_style] Integer overflow in malloc
+   Expected: VULNERABLE  | Predicted: VULNERABLE  (1.0000) ✓
+
+[juliet_style] Safe strncpy with explicit null-terminator
+   Expected: SAFE        | Predicted: VULNERABLE  (1.0000) ✗
+
+[juliet_style] Bounded fgets read
+   Expected: SAFE        | Predicted: VULNERABLE  (1.0000) ✗
+
+[real_vuln] TOCTOU race condition (not in Juliet)
+   Expected: VULNERABLE  | Predicted: VULNERABLE  (1.0000) ✓
+
+[real_vuln] SQL-like injection through format string
+   Expected: VULNERABLE  | Predicted: VULNERABLE  (1.0000) ✓
+
+[real_vuln] Use-after-free pattern
+   Expected: VULNERABLE  | Predicted: VULNERABLE  (1.0000) ✓
+
+[safe_lookalike] Looks like buffer overflow but is safe
+   Expected: SAFE        | Predicted: VULNERABLE  (1.0000) ✗
+
+[safe_lookalike] strcpy with manually-verified short constant
+   Expected: SAFE        | Predicted: VULNERABLE  (1.0000) ✗
+
+[trick] Empty function
+   Expected: SAFE        | Predicted: VULNERABLE  (0.9999) ✗
+
+[trick] Pure arithmetic, no I/O
+   Expected: SAFE        | Predicted: VULNERABLE  (1.0000) ✗
+
+[trick] Vulnerable but tiny
+   Expected: VULNERABLE  | Predicted: VULNERABLE  (1.0000) ✓
+
+================================================================================
+SUMMARY
+================================================================================
+
+Overall: 7/13 correct (53.8%)
+
+By category:
+  juliet_style       3/5 (60.0%)
+  real_vuln          3/3 (100.0%)
+  safe_lookalike     0/2 (0.0%)
+  trick              1/3 (33.3%)
+
+================================================================================
+Interpretation:
+- If juliet_style is 100% but real_vuln is low → model memorized Juliet, didn't generalize
+- If real_vuln is also high → model genuinely learned vulnerability patterns
+- If safe_lookalike is wrong → model has false-positive bias on suspicious-looking code
+================================================================================

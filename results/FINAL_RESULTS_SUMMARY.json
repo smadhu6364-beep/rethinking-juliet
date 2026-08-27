@@ -1,0 +1,94 @@
+{
+  "generated": "2026-07-08",
+  "leakage_fix": {
+    "date": "2026-07-08",
+    "bug": "G2B/B2G naming leakage (58.2% of Java/C# rows, 100% mapping to label 0) and FLAW/POTENTIAL/FIX/INCIDENTAL comment leakage (~17x FIX-token frequency gap between classes) present in the training text for all three languages, not just Java/C#",
+    "fix": "src/preprocessing/sanitize.py, applied via apply_sanitization.py to all three languages' raw extracted parquet, then rebuild_splits_clean.py / dedup_split_multilang.py re-run on the cleaned data",
+    "side_effect": "dedup rates were far higher than previously known once name/comment differences stopped masking duplicates -- C/C++ 116,263->25,851 unique (77.8% dupes), Java 127,822->33,510 (73.8%), C# 168,809->43,914 (73.9%)",
+    "verification": "post-fix splits checked for zero remaining G2B/B2G/FLAW/POTENTIAL/FIX/INCIDENTAL occurrences; one match found and manually confirmed benign (a fixed boilerplate string containing the English word \"incidental\", appearing in both classes, not a Juliet marker)",
+    "note": "distinct from the C/C++ labeling_fix below -- that one is a label-assignment bug, this is a training-text-content bug"
+  },
+  "dataset": {
+    "source": "Juliet C/C++ Test Suite v1.3 (NIST SARD)",
+    "processing": "leakage-fixed (see leakage_fix above), deduplicated, stratified train/val/test split, zero train-test overlap verified",
+    "train_samples": 20617,
+    "val_samples": 2577,
+    "test_samples": 2578,
+    "label_fix": {
+      "date": "2026-07-07",
+      "bug": "goodG2B/goodB2G Juliet naming variants (NIST-documented safe control-flow paths) were labeled vulnerable (1) instead of safe (0) in src/preprocessing/extract_functions.py",
+      "fix_commit": "b1ee960",
+      "verification": "every row of the regenerated dataset independently recomputed and cross-checked against the fixed labeling function; 0 mismatches"
+    }
+  },
+  "status": "ALL_TRAINING_COMPLETE_ON_LEAKAGE_FIXED_DATA",
+  "full_results_table": "results/FINAL_CLEAN_RESULTS_TABLE.json -- 4 models x 3 languages, all 12 combinations trained, evaluated, and structurally validated (confusion matrix sums checked against reported test_samples for every file) on leakage-fixed data",
+  "models": {
+    "random_forest": {
+      "status": "final",
+      "cpp": {"train_samples": 20617, "test_samples": 2578, "accuracy": 0.9996, "precision": 0.9985, "recall": 1.0, "f1": 0.9992, "source_file": "results/rf_baseline_evaluation.AFTER_label_fix.json"},
+      "java": {"train_samples": 26808, "test_samples": 3351, "accuracy": 0.9851, "precision": 0.9827, "recall": 0.9827, "f1": 0.9827, "source_file": "results/rf_baseline_java_evaluation.json"},
+      "csharp": {"train_samples": 35131, "test_samples": 4392, "accuracy": 0.9888, "precision": 0.9910, "recall": 0.9833, "f1": 0.9871, "source_file": "results/rf_baseline_csharp_evaluation.json"}
+    },
+    "codebert": {
+      "status": "final",
+      "cpp": {"train_samples": 20617, "test_samples": 2578, "accuracy": 1.0, "precision": 1.0, "recall": 1.0, "f1": 1.0, "source_file": "results/codebert_evaluation.AFTER_label_fix.json"},
+      "java": {"train_samples": 26808, "test_samples": 3351, "accuracy": 0.9976, "precision": 0.9965, "recall": 0.9979, "f1": 0.9972, "source_file": "results/codebert_java_evaluation.json"},
+      "csharp": {"train_samples": 35131, "test_samples": 4392, "accuracy": 0.9973, "precision": 0.9969, "recall": 0.9969, "f1": 0.9969, "source_file": "results/codebert_csharp_evaluation.json"},
+      "old_mismatched_comparison_superseded": {
+        "f1": 0.4094, "source_file": "results/codebert_test_evaluation.json",
+        "note": "Checkpoint was TRAINED before the label fix, on old/leaky labels, then EVALUATED on corrected labels -- a train/test mismatch, not a controlled retrain. Fully superseded by the final cpp row above, kept only as historical record."
+      }
+    },
+    "graphcodebert": {
+      "status": "final",
+      "cpp": {"train_samples": 20617, "test_samples": 2578, "accuracy": 1.0, "precision": 1.0, "recall": 1.0, "f1": 1.0, "source_file": "results/graphcodebert_evaluation.AFTER_label_fix.json"},
+      "java": {"train_samples": 26808, "test_samples": 3351, "accuracy": 0.9958, "precision": 0.9945, "recall": 0.9958, "f1": 0.9952, "source_file": "results/graphcodebert_java_evaluation.json"},
+      "csharp": {"train_samples": 35131, "test_samples": 4392, "accuracy": 0.998, "precision": 0.9964, "recall": 0.999, "f1": 0.9977, "source_file": "results/graphcodebert_csharp_evaluation.json"}
+    },
+    "hybrid": {
+      "status": "final",
+      "cpp": {"train_samples": 20617, "test_samples": 2578, "accuracy": 1.0, "precision": 1.0, "recall": 1.0, "f1": 1.0, "source_file": "results/hybrid_evaluation.AFTER_label_fix.json"},
+      "java": {"train_samples": 26808, "test_samples": 3351, "accuracy": 0.8851, "precision": 0.8936, "recall": 0.8323, "f1": 0.8619, "source_file": "results/hybrid_java_evaluation.json"},
+      "csharp": {"train_samples": 35131, "test_samples": 4392, "accuracy": 0.9599, "precision": 0.9812, "recall": 0.9258, "f1": 0.9527, "source_file": "results/hybrid_csharp_evaluation.json"},
+      "note": "Java notably weaker than every other model/language cell (0.86 vs 0.95-1.0 elsewhere) -- reproduced consistently across two independent reruns (0.8619 and 0.8829), so this is a real finding about the frozen-backbone hybrid architecture on Java specifically, not noise. Worth a line in the paper's discussion/limitations, not a bug to chase further.",
+      "old_broken_debug_run_superseded": {
+        "f1": 0.0, "source_file": "results/hybrid_evaluation.AFTER_label_fix.json.BEFORE_leakage_fix",
+        "note": "Debug-scale (2000 train/500 val) run collapsed to predicting everything as the negative class -- too-low LR for a frozen-backbone linear-probe head trained 1 epoch. Fully superseded by the final cpp row above (train_hybrid_full.py: higher LR, 3 epochs, full dataset)."
+      }
+    }
+  },
+  "ceiling_effect_caveat": "C/C++ hits an exact 1.000 F1 for CodeBERT, GraphCodeBERT, AND Hybrid on the leakage-fixed data (test_samples=2578). Verified no remaining G2B/B2G or FLAW/FIX/POTENTIAL leakage in the training text (see leakage_fix.verification). Plausible explanation, not confirmed: the leakage fix's aggressive dedup shrank the test set to 2,578 samples, and Juliet's per-CWE vulnerability patterns are inherently templated/limited in diversity, so full fine-tuning of large pretrained code models can plausibly reach ceiling on held-out instances of the same limited pattern space. RF (0.9992) lands just under perfect on the identical data, consistent with a real ceiling effect rather than a new hidden leak. Recommend stating this explicitly as a limitation in the paper rather than presenting the 1.000s as unqualified.",
+  "multilang_java_csharp": {
+    "generated": "2026-07-09",
+    "status": "final_all_four_models_trained_and_validated",
+    "note": "All four models (RF, CodeBERT, GraphCodeBERT, Hybrid) trained and evaluated on leakage-fixed Java/C# data. Numbers folded into the models section above (java/csharp keys per model). Multiple independent reruns of CodeBERT/GraphCodeBERT/Hybrid landed within a tight, consistent band each time, which is itself evidence the leakage-fixed results are stable, not a fluke of one run."
+  },
+  "out_of_distribution_evaluation": {
+    "model": "codebert-test (pre-fix checkpoint)",
+    "total_samples": 35,
+    "overall_correct": 18,
+    "overall_accuracy": 0.5143,
+    "by_category": {
+      "juliet_style": "10/10",
+      "real_world": "8/8",
+      "safe_lookalike": "0/10",
+      "trick": "0/7"
+    },
+    "source_file": "results/external_eval_v2_results.json",
+    "note": "Below the 50% random baseline on this near-balanced suite; not re-run post label-fix."
+  },
+  "attention_faithfulness": {
+    "source_file": "results/faithfulness_results.json",
+    "summary": "Perturbation-based faithfulness analysis of CodeBERT attention; average perturbation delta ~5e-6 (non-causal attention), as reported in the paper."
+  },
+  "open_items_before_submission": [
+    "DONE: all 12 model/language combinations trained, evaluated, and validated on leakage-fixed data -- see full_results_table.",
+    "Re-run the OOD evaluation (external_eval_v2.py) -- needs the C/C++ CodeBERT checkpoint zip downloaded from notebook 09 (was blocked by browser multi-download limits; may need a manual re-trigger of that download cell).",
+    "Fold all final clean-data numbers into the paper text (results table, RQ1/RQ2/RQ3 prose, abstract).",
+    "Add the ceiling_effect_caveat (see above) and the Hybrid-Java-underperformance note to the paper's discussion/limitations section.",
+    "DONE: page limit corrected to 14 (not 10) -- paper compiles at 12 pages, no trimming needed, 2 pages of headroom.",
+    "Commit the leakage-fix pipeline work + all final results -- awaiting go-ahead.",
+    "Push local branch to the GitLab remote -- nothing pushed yet this session."
+  ]
+}

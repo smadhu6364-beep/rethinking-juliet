@@ -1,0 +1,723 @@
+[
+  {
+    "sample_id": "CWE121_v1",
+    "code": "void read_input(char *src) {\n    char dest[16];\n    strcpy(dest, src);\n    printf(\"%s\", dest);\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "];",
+        "16",
+        ");",
+        "read",
+        ");",
+        "input",
+        "char",
+        "str",
+        "(\"",
+        "src"
+      ],
+      "code": "void read_input(char *src) {\n    char dest[16];\n    strcpy(dest, src);\n    printf(\"%s\", dest);\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "char",
+        "dest",
+        "[",
+        "16",
+        "]",
+        "strcpy",
+        "src"
+      ],
+      "explanation": "The `strcpy` function is used to copy data from the `src` buffer into `dest`. The `dest` buffer is a fixed size of 16 bytes. `strcpy` performs no bounds checking, allowing an attacker to write past the end of `dest` if `src` contains more than 15 characters plus the null terminator, leading to a buffer overflow.",
+      "exploitation_risk": "An attacker can provide an `src` string longer than 15 characters, causing an overwrite of adjacent stack memory. This could lead to corruption of local variables, control flow manipulation (e.g., overwriting the return address), denial of service, or arbitrary code execution.",
+      "mitigation": "Replace `strcpy` with `snprintf` to ensure bounds-checked copying and proper null termination: `snprintf(dest, sizeof(dest), \"%s\", src);`"
+    },
+    "cwe": "CWE-121",
+    "expected": "VULNERABLE"
+  },
+  {
+    "sample_id": "CWE121_v2",
+    "code": "void process(char *data) {\n    char buf[8];\n    gets(buf);\n    return;\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "return",
+        "];",
+        ");",
+        "char",
+        "process",
+        "data",
+        "gets",
+        "char",
+        "buf",
+        "void"
+      ],
+      "code": "void process(char *data) {\n    char buf[8];\n    gets(buf);\n    return;\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "gets",
+        "buf",
+        "[8]",
+        "char"
+      ],
+      "explanation": "The `gets()` function is used to read input into the `buf` array without any bounds checking. Since `buf` is only 8 bytes long, any input greater than 7 characters (plus the null terminator) will overflow the buffer.",
+      "exploitation_risk": "An attacker can provide an input string longer than the buffer's capacity, overwriting adjacent stack memory. This could lead to denial-of-service, control-flow hijacking by overwriting the return address, or potentially arbitrary code execution.",
+      "mitigation": "Replace `gets(buf);` with a safer function that enforces bounds checking, such as `fgets(buf, sizeof(buf), stdin);`. This prevents writing beyond the allocated buffer size."
+    },
+    "cwe": "CWE-121",
+    "expected": "VULNERABLE"
+  },
+  {
+    "sample_id": "CWE121_v3",
+    "code": "void concat(char *s1, char *s2) {\n    char result[20];\n    strcpy(result, s1);\n    strcat(result, s2);\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "];",
+        "20",
+        ");",
+        ");",
+        "char",
+        "str",
+        "str",
+        "conc",
+        "at",
+        "void"
+      ],
+      "code": "void concat(char *s1, char *s2) {\n    char result[20];\n    strcpy(result, s1);\n    strcat(result, s2);\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "20",
+        "strcpy",
+        "strcat",
+        "char",
+        "result",
+        "str"
+      ],
+      "explanation": "The `result` buffer is allocated with a fixed size of 20 bytes. Both `strcpy` and `strcat` operations do not perform bounds checking and will write past the end of the `result` buffer if the combined length of `s1` and `s2` (plus the null terminator) exceeds 19 characters.",
+      "exploitation_risk": "An attacker could provide crafted inputs for `s1` and/or `s2` that are longer than the buffer can hold, leading to a stack-based buffer overflow. This could result in denial of service, arbitrary code execution by overwriting return addresses or other critical stack data, or information disclosure.",
+      "mitigation": "Use safer string handling functions that perform bounds checking. Replace `strcpy` and `strcat` with `snprintf` to ensure the buffer limit is respected: `snprintf(result, sizeof(result), \"%s%s\", s1, s2);`"
+    },
+    "cwe": "CWE-121",
+    "expected": "VULNERABLE"
+  },
+  {
+    "sample_id": "CWE121_s1",
+    "code": "void read_safe(char *src) {\n    char dest[16];\n    strncpy(dest, src, sizeof(dest)-1);\n    dest[sizeof(dest)-1] = '\\0';\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "];",
+        "';",
+        "16",
+        ");",
+        "char",
+        "read",
+        "str",
+        "src",
+        "of",
+        "safe"
+      ],
+      "code": "void read_safe(char *src) {\n    char dest[16];\n    strncpy(dest, src, sizeof(dest)-1);\n    dest[sizeof(dest)-1] = '\\0';\n}"
+    },
+    "explanation": {
+      "parse_error": true,
+      "raw": "{\n  \"predicted_cwe\": \"CWE-476: NULL Pointer Dereference\",\n  \"vulnerability_present\": true,\n  \"evidence_tokens\": [\"strncpy\", \"src\", \"char\", \"str\"],\n  \"explanation\": \"While the `strncpy` usage combined with explicit null-termination (`dest[sizeof(dest)-1] = '\\\\0'`) correctly prevents buffer overflows into the `dest` buffer, the `src` pointer is not validated. If `src` is a `NULL` pointer, calling `strncpy` will result in a NULL pointer dereference.\",\n  \"exploitation_risk\": \"An attacker could cause a denial of service (DoS) by providing a `NULL` pointer for `src`, leading to a program crash. This typically occurs when an uninitialized or deliberately nullified pointer is passed to the function.\",\n  \"mitigation\": \"Add a check for `src` being `NULL` before calling `strncpy`. For example:\\n"
+    },
+    "cwe": "CWE-121",
+    "expected": "SAFE"
+  },
+  {
+    "sample_id": "CWE121_s2",
+    "code": "void read_line(FILE *fp) {\n    char buf[64];\n    if (fgets(buf, sizeof(buf), fp) != NULL) printf(\"%s\", buf);\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "];",
+        "64",
+        "line",
+        ");",
+        "read",
+        "(\"",
+        "char",
+        "\",",
+        "NULL",
+        "fp"
+      ],
+      "code": "void read_line(FILE *fp) {\n    char buf[64];\n    if (fgets(buf, sizeof(buf), fp) != NULL) printf(\"%s\", buf);\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-120: Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')",
+      "vulnerability_present": false,
+      "evidence_tokens": [
+        "];",
+        "64",
+        "line",
+        ");",
+        "read",
+        "(",
+        "char",
+        ","
+      ],
+      "explanation": "The code correctly uses `fgets` with `sizeof(buf)` as the size argument, which ensures that no more than 63 characters plus a null terminator are written into the `buf` array, thus preventing a buffer overflow. The subsequent `printf` operation is also safe as it prints a properly null-terminated string within the buffer's bounds.",
+      "exploitation_risk": "N/A",
+      "mitigation": "N/A"
+    },
+    "cwe": "CWE-121",
+    "expected": "SAFE"
+  },
+  {
+    "sample_id": "CWE78_v1",
+    "code": "void run_cmd(char *input) {\n    char cmd[256];\n    sprintf(cmd, \"ping %s\", input);\n    system(cmd);\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "];",
+        "256",
+        ");",
+        ");",
+        "system",
+        "ping",
+        "\",",
+        "char",
+        "input",
+        "cmd"
+      ],
+      "code": "void run_cmd(char *input) {\n    char cmd[256];\n    sprintf(cmd, \"ping %s\", input);\n    system(cmd);\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "input",
+        "sprintf",
+        "system",
+        "\"ping %s\""
+      ],
+      "explanation": "The code constructs a shell command string by directly incorporating unsanitized user `input` into the command template `\"ping %s\"` using `sprintf`. This resulting string is then executed by `system()`, which interprets the string as a shell command.",
+      "exploitation_risk": "An attacker can provide malicious input (e.g., `127.0.0.1; rm -rf /`) which would be interpreted by the shell, allowing for arbitrary command execution. Any shell metacharacter (like `;`, `|`, `&`, `&&`, `||`) can be used to inject and execute additional commands.",
+      "mitigation": "The `input` should be strictly validated to ensure it only contains allowed characters (e.g., alphanumeric, periods, hyphens for hostnames/IPs) and does not contain any shell metacharacters. A more robust fix is to avoid `system()` for user-controlled inputs and instead use `execlp(\"/bin/ping\", \"ping\", input, NULL);` to execute the `ping` command directly, passing `input` as a distinct argument, which prevents shell interpretation."
+    },
+    "cwe": "CWE-78",
+    "expected": "VULNERABLE"
+  },
+  {
+    "sample_id": "CWE78_v2",
+    "code": "void execute(char *arg) {\n    char buf[128];\n    strcpy(buf, arg);\n    system(buf);\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "];",
+        "128",
+        ");",
+        ");",
+        "execute",
+        "system",
+        "str",
+        "char",
+        "char",
+        "arg"
+      ],
+      "code": "void execute(char *arg) {\n    char buf[128];\n    strcpy(buf, arg);\n    system(buf);\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "str",
+        "system",
+        "128",
+        "char",
+        "];",
+        "strcpy",
+        "buf",
+        "arg"
+      ],
+      "explanation": "The code uses `strcpy` to copy user-supplied input (`arg`) into a fixed-size buffer (`buf`) without any bounds checking, leading to a buffer overflow (CWE-120). Subsequently, the `system()` function executes the content of this user-controlled buffer, making it vulnerable to OS command injection (CWE-78).",
+      "exploitation_risk": "An attacker can provide a specially crafted `arg` string to either overflow the `buf` and potentially achieve arbitrary code execution via stack corruption, or inject malicious shell commands (e.g., `\"ls -l; rm -rf /\"`) to execute arbitrary commands on the host system with the privileges of the executing process.",
+      "mitigation": "Replace `strcpy` with a bounds-checked function like `strncpy` (ensuring proper null termination) or `snprintf` to prevent buffer overflows. To prevent command injection, avoid using `system()` with user-controlled input; instead, use safer APIs like `execve()` and pass arguments explicitly, or strictly sanitize and whitelist inputs if `system()` is unavoidable."
+    },
+    "cwe": "CWE-78",
+    "expected": "VULNERABLE"
+  },
+  {
+    "sample_id": "CWE78_v3",
+    "code": "int run(char *cmd) {\n    return system(cmd);\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        ");",
+        "return",
+        "int",
+        "system",
+        "run",
+        "char",
+        "cmd",
+        "cmd"
+      ],
+      "code": "int run(char *cmd) {\n    return system(cmd);\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "system",
+        "cmd",
+        "char",
+        "run"
+      ],
+      "explanation": "The `system()` function executes its argument as a shell command. Passing a user-controlled string `cmd` directly to `system()` without proper sanitization or validation allows an attacker to inject arbitrary shell commands.",
+      "exploitation_risk": "An attacker can provide a malicious string for `cmd`, such as 'calc.exe & del C:\\windows\\system32', or on Linux, 'rm -rf /; ls -l', leading to arbitrary code execution, data exfiltration, or denial of service on the underlying operating system.",
+      "mitigation": "Avoid using `system()` with untrusted input. Instead, use safer alternatives like `execvp()` or the `fork()`/`exec()` family functions, which execute a specified program directly without involving a shell, preventing shell metacharacter interpretation. If `system()` must be used, rigorous input validation and sanitization of `cmd` is required to escape or remove all shell metacharacters, but this is often complex and error-prone."
+    },
+    "cwe": "CWE-78",
+    "expected": "VULNERABLE"
+  },
+  {
+    "sample_id": "CWE78_s1",
+    "code": "void run_fixed(const char *file) {\n    const char *args[] = {\"/bin/ping\",\"-c\",\"1\",file,NULL};\n    execv(\"/bin/ping\",(char *const *)args);\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        ");",
+        "};",
+        "const",
+        "[]",
+        "(\"",
+        "const",
+        "*)",
+        "\",",
+        "char",
+        "fixed"
+      ],
+      "code": "void run_fixed(const char *file) {\n    const char *args[] = {\"/bin/ping\",\"-c\",\"1\",file,NULL};\n    execv(\"/bin/ping\",(char *const *)args);\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "file",
+        "args",
+        "execv"
+      ],
+      "explanation": "The `file` parameter, which is an untrusted string input, is directly incorporated into the argument list for the `/bin/ping` command executed via `execv`. While `execv` prevents classic shell injection by not invoking a shell, it does not protect against argument injection or vulnerabilities in the target program's argument parsing.",
+      "exploitation_risk": "An attacker could craft the `file` string to supply unintended command-line options to `/bin/ping` (e.g., by starting `file` with a hyphen `-`). This could lead to denial of service, information disclosure, or, in the rare case of a vulnerability in `ping`'s argument processing, potentially more severe impacts like arbitrary code execution. However, direct shell injection (e.g., via semicolons) is prevented by `execv`.",
+      "mitigation": "Strictly validate the `file` parameter. Implement a whitelist approach to ensure `file` contains only characters expected for a hostname or IP address (e.g., alphanumeric, dots, hyphens, colons). Reject any input that does not conform to the expected safe format before passing it to `execv`."
+    },
+    "cwe": "CWE-78",
+    "expected": "SAFE"
+  },
+  {
+    "sample_id": "CWE78_s2",
+    "code": "void log_event(const char *type) {\n    const char *ok[] = {\"login\",\"logout\",\"error\"};\n    for (int i=0;i<3;i++) if (!strcmp(type,ok[i])) { printf(\"%s\\n\",type); return; }\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "};",
+        "return",
+        ");",
+        "const",
+        "log",
+        "[]",
+        "event",
+        "))",
+        "(\"",
+        "ok"
+      ],
+      "code": "void log_event(const char *type) {\n    const char *ok[] = {\"login\",\"logout\",\"error\"};\n    for (int i=0;i<3;i++) if (!strcmp(type,ok[i])) { printf(\"%s\\n\",type); return; }\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-778: Insufficient Logging",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "return",
+        "log",
+        "event",
+        "};"
+      ],
+      "explanation": "The `log_event` function only logs explicitly allowed event types. If the input `type` does not match any predefined safe types, the function silently returns without logging or indicating that an unrecognized event occurred. This \"fail-silent\" behavior constitutes insufficient logging.",
+      "exploitation_risk": "An attacker could send arbitrary, unauthorized event types (e.g., related to reconnaissance or attempted exploits), and these would not be logged by the system. This lack of audit trails hinders detection, incident response, and forensic analysis of malicious activities.",
+      "mitigation": "Add a default logging action for unrecognized event types. After the loop, if no match is found, print a warning message including the unrecognized `type` string to ensure all events are recorded for auditing purposes. For example, add `fprintf(stderr, \"WARNING: Unrecognized event type '%s'\\n\", type);` after the loop."
+    },
+    "cwe": "CWE-78",
+    "expected": "SAFE"
+  },
+  {
+    "sample_id": "CWE190_v1",
+    "code": "void alloc(int count) {\n    int size = count * sizeof(int);\n    int *data = malloc(size);\n    memset(data,0,size);\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        ");",
+        ");",
+        "int",
+        ");",
+        "int",
+        "mem",
+        "alloc",
+        "data",
+        "count",
+        "mall"
+      ],
+      "code": "void alloc(int count) {\n    int size = count * sizeof(int);\n    int *data = malloc(size);\n    memset(data,0,size);\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-131: Incorrect Calculation of Buffer Size",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "int",
+        "alloc",
+        "mem",
+        "data"
+      ],
+      "explanation": "The multiplication `count * sizeof(int)` can suffer from integer overflow if `count` is excessively large or negative. This results in an incorrect `size` value for `malloc`, potentially leading to an undersized allocation or an attempt to allocate an extremely large buffer. Additionally, the return value of `malloc` is not checked, risking a NULL pointer dereference by `memset` if the allocation fails.",
+      "exploitation_risk": "An attacker can provide a large positive `count` value to cause an integer overflow, leading to an undersized buffer allocation. Subsequent operations expecting a larger buffer would then result in a heap buffer overflow (CWE-787). A negative `count` would cause `malloc` to attempt an extremely large allocation (due to `int` to `size_t` conversion), leading to memory exhaustion and a denial of service (CWE-400). If `malloc` fails for any reason, the unhandled `NULL` pointer could lead to a program crash (CWE-476) when `memset` is called.",
+      "mitigation": "Validate `count` to ensure it's positive and does not cause an integer overflow before calculating `size` (e.g., `if (count <= 0 || (SIZE_MAX / sizeof(int) < count)) { /* handle error */ }`). Always check the return value of `malloc` for `NULL` and handle allocation failures gracefully to prevent NULL pointer dereferences (e.g., `if (data == NULL) { /* handle error */ }`)."
+    },
+    "cwe": "CWE-190",
+    "expected": "VULNERABLE"
+  },
+  {
+    "sample_id": "CWE190_v2",
+    "code": "short increment(short val) {\n    return val + 1;\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "increment",
+        "val",
+        "return",
+        "short",
+        "short",
+        "val"
+      ],
+      "code": "short increment(short val) {\n    return val + 1;\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-190: Integer Overflow or Wraparound",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "increment",
+        "val",
+        "return",
+        "short"
+      ],
+      "explanation": "The `increment` function takes a `short` integer and returns `val + 1`. If `val` is the maximum representable value for a `short` (e.g., 32767 for a 16-bit signed short), adding 1 will cause an integer overflow. This results in the value wrapping around to the minimum negative value, leading to unpredictable program behavior.",
+      "exploitation_risk": "An attacker could supply an input value that, when incremented, causes an integer overflow. If the result of this function is subsequently used in operations like memory allocation, array indexing, or loop bounds, this overflow could lead to buffer overflows, out-of-bounds memory access, denial of service, or logic errors, potentially enabling arbitrary code execution or privilege escalation.",
+      "mitigation": "To mitigate this, first, check for potential overflow before performing the addition (e.g., `if (val == SHRT_MAX) { handle_overflow(); }`). Second, consider using a wider integer type (e.g., `int` or `long`) if the incremented value is expected to exceed the `short` range. Alternatively, use compiler built-ins for safe integer arithmetic, such as `__builtin_add_overflow` in GCC/Clang."
+    },
+    "cwe": "CWE-190",
+    "expected": "VULNERABLE"
+  },
+  {
+    "sample_id": "CWE190_v3",
+    "code": "int compute(unsigned int a, unsigned int b) {\n    return (int)(a + b);\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        ");",
+        "compute",
+        ")(",
+        "return",
+        "int",
+        "unsigned",
+        "unsigned",
+        "int",
+        "int",
+        "int"
+      ],
+      "code": "int compute(unsigned int a, unsigned int b) {\n    return (int)(a + b);\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-190: Integer Overflow or Wraparound",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "unsigned",
+        "int",
+        "return",
+        ")("
+      ],
+      "explanation": "The function adds two `unsigned int` values. If their sum exceeds `INT_MAX`, casting the `unsigned int` sum to `int` will result in an integer overflow. Values greater than `INT_MAX` cannot be represented as positive `int` values, leading to implementation-defined behavior, often a negative value via two's complement wrap-around.",
+      "exploitation_risk": "An attacker could provide large `unsigned int` values for `a` and `b` such that their sum overflows the `int` return type. This could lead to a large positive value being interpreted as a small or negative value. If this result is subsequently used for memory allocation (e.g., `malloc` size), array indexing, or loop bounds, it could cause buffer overflows, out-of-bounds reads/writes, or denial of service.",
+      "mitigation": "To mitigate this, ensure the sum does not exceed `INT_MAX` before casting. An explicit check can be added: `if (a > INT_MAX - b) { /* handle overflow */ }`. Alternatively, change the function's return type to `unsigned int` if the large positive sum is the intended output, or use a larger signed integer type (e.g., `long long`) if a wider range is required."
+    },
+    "cwe": "CWE-190",
+    "expected": "VULNERABLE"
+  },
+  {
+    "sample_id": "CWE190_s1",
+    "code": "void alloc_safe(int count) {\n    if (count<=0||count>1000000) return;\n    size_t size=(size_t)count*sizeof(int);\n    int *data=malloc(size);\n    if (!data) return;\n    free(data);\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        ");",
+        "int",
+        ");",
+        ");",
+        "of",
+        "size",
+        "int",
+        "=(",
+        "data",
+        "safe"
+      ],
+      "code": "void alloc_safe(int count) {\n    if (count<=0||count>1000000) return;\n    size_t size=(size_t)count*sizeof(int);\n    int *data=malloc(size);\n    if (!data) return;\n    free(data);\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-190: Integer Overflow or Wraparound",
+      "vulnerability_present": false,
+      "evidence_tokens": [
+        "(size_t)",
+        "if (!data)",
+        "free(data)",
+        "count<=0"
+      ],
+      "explanation": "The code correctly calculates the allocation size using `(size_t)count * sizeof(int)`, which explicitly casts `count` to `size_t` before multiplication, preventing integer overflow. It also includes proper input validation for `count`, a null check for `malloc`'s return value to handle allocation failures, and ensures the allocated memory is freed. Therefore, this specific code snippet is robust and not vulnerable.",
+      "exploitation_risk": "N/A",
+      "mitigation": "N/A"
+    },
+    "cwe": "CWE-190",
+    "expected": "SAFE"
+  },
+  {
+    "sample_id": "CWE190_s2",
+    "code": "int safe_add(int a, int b) {\n    if ((b>0&&a>INT_MAX-b)||(b<0&&a<INT_MIN-b)) return -1;\n    return a+b;\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "))",
+        "return",
+        "return",
+        "safe",
+        "((",
+        "add",
+        "if",
+        ")|",
+        "int",
+        "MAX"
+      ],
+      "code": "int safe_add(int a, int b) {\n    if ((b>0&&a>INT_MAX-b)||(b<0&&a<INT_MIN-b)) return -1;\n    return a+b;\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-190: Integer Overflow or Wraparound",
+      "vulnerability_present": false,
+      "evidence_tokens": [
+        "if",
+        "INT_MAX",
+        "-",
+        "a",
+        "b",
+        "INT_MIN",
+        ">",
+        "<"
+      ],
+      "explanation": "The `safe_add` function correctly implements pre-condition checks to prevent integer overflow and underflow before performing the addition. The condition `b > 0 && a > INT_MAX - b` precisely identifies potential overflows when `b` is positive. Similarly, `b < 0 && a < INT_MIN - b` correctly catches potential underflows when `b` is negative. The intermediate arithmetic operations (`INT_MAX - b` and `INT_MIN - b`) are also safe from overflow/underflow because of the preceding sign checks on `b`. This implementation is a standard and robust method for ensuring safe integer addition.",
+      "exploitation_risk": "N/A",
+      "mitigation": "N/A"
+    },
+    "cwe": "CWE-190",
+    "expected": "SAFE"
+  },
+  {
+    "sample_id": "CWE191_v1",
+    "code": "unsigned int decrement(unsigned int val) {\n    return val - 1;\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "return",
+        "val",
+        "ment",
+        "unsigned",
+        "unsigned",
+        "decre",
+        "int",
+        "val",
+        "int"
+      ],
+      "code": "unsigned int decrement(unsigned int val) {\n    return val - 1;\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-190: Integer Overflow or Wraparound",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "val",
+        "unsigned",
+        "return"
+      ],
+      "explanation": "This function is vulnerable to an integer underflow. If the input `val` is 0, subtracting 1 from it will cause the `unsigned int` to wrap around to its maximum possible value (e.g., UINT_MAX), leading to an unexpectedly large positive number.",
+      "exploitation_risk": "An attacker could provide a `val` of 0, causing the function to return a very large positive integer. This unexpected value could then be used in subsequent operations (e.g., array indexing, memory allocation, loop bounds), potentially leading to out-of-bounds access, buffer overflows, denial of service, or logic errors.",
+      "mitigation": "Add an explicit check to prevent underflow. For example: `return (val == 0) ? 0 : val - 1;` to cap the minimum at 0, or `if (val > 0) { return val - 1; } else { /* handle error or return specific value */ }`."
+    },
+    "cwe": "CWE-191",
+    "expected": "VULNERABLE"
+  },
+  {
+    "sample_id": "CWE191_v2",
+    "code": "void process(unsigned int len) {\n    unsigned int adj = len - 10;\n    char *buf = malloc(adj);\n    memset(buf,0,adj);\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        ");",
+        "10",
+        "char",
+        "unsigned",
+        ");",
+        "process",
+        "len",
+        "mem",
+        "unsigned",
+        "mall"
+      ],
+      "code": "void process(unsigned int len) {\n    unsigned int adj = len - 10;\n    char *buf = malloc(adj);\n    memset(buf,0,adj);\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-190: Integer Overflow or Wraparound",
+      "vulnerability_present": true,
+      "evidence_tokens": [
+        "unsigned",
+        "len",
+        "10",
+        "adj",
+        "malloc",
+        "memset"
+      ],
+      "explanation": "The calculation `len - 10` involves unsigned integers. If `len` is less than `10`, an integer underflow occurs, causing `adj` to become an extremely large positive number. This large `adj` value is then passed to `malloc`, which will likely fail and return NULL, leading to a subsequent NULL pointer dereference in `memset`.",
+      "exploitation_risk": "An attacker can supply a value for `len` less than 10 (e.g., 0-9). This will trigger the integer underflow, causing `malloc` to request an excessively large buffer. `malloc` will likely return `NULL`, leading to a denial of service (segmentation fault) when `memset` attempts to dereference the `NULL` pointer.",
+      "mitigation": "Add a check to ensure `len` is greater than or equal to `10` before performing the subtraction. Additionally, always check the return value of `malloc` for `NULL` to handle potential allocation failures gracefully. Example: `if (len < 10) { /* handle error */ } else { unsigned int adj = len - 10; /* ... */ }`"
+    },
+    "cwe": "CWE-191",
+    "expected": "VULNERABLE"
+  },
+  {
+    "sample_id": "CWE191_v3",
+    "code": "int subtract(int a, int b) {\n    return a - b;\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "subtract",
+        "return",
+        "int",
+        "int",
+        "int"
+      ],
+      "code": "int subtract(int a, int b) {\n    return a - b;\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-190: Integer Overflow or Wraparound",
+      "vulnerability_present": false,
+      "evidence_tokens": [
+        "subtract",
+        "return",
+        "int",
+        "int",
+        "int"
+      ],
+      "explanation": "The provided code implements a basic integer subtraction function. In isolation, this function is not inherently vulnerable. While C/C++ integer arithmetic can lead to overflow/underflow, this specific snippet doesn't demonstrate such a condition without context of the input values or how the result is used.",
+      "exploitation_risk": "N/A - The function itself is safe. Any potential issues would arise from how its inputs are derived (e.g., untrusted source) or how its result is subsequently utilized in a way that triggers an overflow/underflow or other vulnerability.",
+      "mitigation": "N/A - No specific fix is required for this function. Best practices involve validating inputs to prevent extreme values that could lead to integer overflow/underflow in subsequent operations, or using larger integer types/safe arithmetic functions if such conditions are expected and need to be handled."
+    },
+    "cwe": "CWE-191",
+    "expected": "VULNERABLE"
+  },
+  {
+    "sample_id": "CWE191_s1",
+    "code": "unsigned int safe_dec(unsigned int val) {\n    if (val==0) return 0;\n    return val-1;\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        "return",
+        "safe",
+        "dec",
+        "val",
+        "==",
+        "val",
+        "return",
+        "unsigned",
+        "unsigned",
+        "if"
+      ],
+      "code": "unsigned int safe_dec(unsigned int val) {\n    if (val==0) return 0;\n    return val-1;\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-190: Integer Overflow or Wraparound",
+      "vulnerability_present": false,
+      "evidence_tokens": [
+        "unsigned",
+        "if",
+        "val",
+        "==",
+        "0",
+        "return",
+        "val",
+        "-",
+        "1"
+      ],
+      "explanation": "This function is designed to safely decrement an unsigned integer. It explicitly checks if 'val' is zero before performing the decrement operation, returning 0 in that case. This prevents integer underflow, where `0 - 1` on an unsigned integer would wrap around to `UINT_MAX`.",
+      "exploitation_risk": "N/A",
+      "mitigation": "N/A"
+    },
+    "cwe": "CWE-191",
+    "expected": "SAFE"
+  },
+  {
+    "sample_id": "CWE191_s2",
+    "code": "void process_safe(unsigned int len) {\n    if (len<10) return;\n    unsigned int adj=len-10;\n    char *buf=malloc(adj+1);\n    if (!buf) return;\n    free(buf);\n}",
+    "inference": {
+      "prediction": "VULNERABLE",
+      "confidence": 0.9999,
+      "top_attention_tokens": [
+        ");",
+        "unsigned",
+        "char",
+        "10",
+        ");",
+        "safe",
+        "process",
+        "(!",
+        "free",
+        "10"
+      ],
+      "code": "void process_safe(unsigned int len) {\n    if (len<10) return;\n    unsigned int adj=len-10;\n    char *buf=malloc(adj+1);\n    if (!buf) return;\n    free(buf);\n}"
+    },
+    "explanation": {
+      "predicted_cwe": "CWE-191: Integer Underflow",
+      "vulnerability_present": false,
+      "evidence_tokens": [
+        "if",
+        "len",
+        "10"
+      ],
+      "explanation": "The CodeBERT model likely detected a potential integer underflow due to the subtraction of `10` from an `unsigned int len`. However, the preceding conditional check `if (len < 10) return;` guarantees that `len` is always 10 or greater before the subtraction, effectively preventing any underflow. Consequently, `adj` will always be a non-negative value, leading to a valid `malloc` call.",
+      "exploitation_risk": "N/A",
+      "mitigation": "N/A"
+    },
+    "cwe": "CWE-191",
+    "expected": "SAFE"
+  }
+]
