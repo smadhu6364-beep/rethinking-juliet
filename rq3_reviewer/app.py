@@ -383,7 +383,7 @@ SHEET_COLUMNS = ["key", "reviewer_id", "sample_id", "correctness", "usefulness",
 CREDENTIALS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "credentials")
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CODEBERT_CHECKPOINT = os.path.join(REPO_ROOT, "experiments", "codebert-test", "checkpoint-1000")
-CODEBERT_CHECKPOINT_HF_REPO = "Khushi81/codebert-juliet-rq3-demo"
+CODEBERT_CHECKPOINT_HF_REPO = None
 
 
 @st.cache_resource(show_spinner="Loading CodeBERT checkpoint...")
@@ -393,15 +393,14 @@ def _load_codebert():
     evaluation in Section V-C, not the final corrected model behind Table VII. Kept for
     live-demo purposes; results here should not be read as the paper's controlled numbers.
 
-    experiments/ is gitignored (large training artefacts), so the checkpoint is not present
-    on a fresh clone (e.g. Streamlit Cloud). Prefer the local copy if present (local dev,
-    no network needed); otherwise pull the inference-only files (config.json,
-    model.safetensors) from the mirrored Hugging Face Hub repo.
+    Requires the checkpoint at experiments/codebert-test/checkpoint-1000 (included in this
+    artefact). If it is not present, the demo tab is unavailable.
     """
-    source = CODEBERT_CHECKPOINT if os.path.isdir(CODEBERT_CHECKPOINT) else CODEBERT_CHECKPOINT_HF_REPO
+    if not os.path.isdir(CODEBERT_CHECKPOINT):
+        return None, None
     try:
         tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")
-        model = AutoModelForSequenceClassification.from_pretrained(source, output_attentions=True)
+        model = AutoModelForSequenceClassification.from_pretrained(CODEBERT_CHECKPOINT, output_attentions=True)
     except Exception:
         return None, None
     model.eval()
@@ -820,9 +819,7 @@ with tab2:
     st.markdown("""
     <div class="info-box">
       <strong>Checkpoint used:</strong> <code>experiments/codebert-test/checkpoint-1000</code>
-      (mirrored on the Hugging Face Hub at
-      <a href="https://huggingface.co/Khushi81/codebert-juliet-rq3-demo" target="_blank">Khushi81/codebert-juliet-rq3-demo</a>
-      for this live demo, since the original training artefacts aren't tracked in git)
+      (included with this artefact)
       — a debug-scale checkpoint trained on 4,000 samples, predating the paper's label fix
       and leakage fix (Section III-A7). This is the <em>same</em> checkpoint used for the
       out-of-distribution evaluation in Section V-C. It is <strong>not</strong> the final,
