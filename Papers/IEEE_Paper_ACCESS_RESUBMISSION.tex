@@ -1,105 +1,118 @@
-\documentclass{IEEEaccess}
+%=======================================================================
+%  IEEE ACCESS resubmission -- Manuscript ID Access-2026-41170
+%  "Rethinking Juliet: Structural Leakage and Benchmark Validity in
+%   Automated Vulnerability Detection"
+%
+%  Prepared with the mandatory IEEE Access template
+%  (ACCESS_latex_template_20260513: ieeeaccess.cls, IEEEtran.cls,
+%   IEEEtran.bst, spotcolor.sty, logo.png, notaglinelogo.png, bullet.png).
+%
+%  Structure follows the Editorial Office instructions of 25-Aug-2026:
+%  Abstract -> Introduction -> Background and History ->
+%  Detailed Explanation of Recent Findings -> Conclusion -> References.
+%=======================================================================
+\documentclass{ieeeaccess}
+
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
-\usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{url}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 
-\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 \begin{document}
 
-\history{Received: DATE; Accepted: DATE}
-
-\doi{10.1109/ACCESS.YEAR.NUMBERING}
+\history{Date of publication xxxx 00, 0000, date of current version xxxx 00, 0000.}
+\doi{10.1109/ACCESS.2026.0429000}
 
 \title{Rethinking Juliet: Structural Leakage and Benchmark Validity in Automated Vulnerability Detection}
 
-\author{
-Anonymous Author(s)
-}
+\author{\uppercase{Kruthik Jadhav}\authorrefmark{1} AND
+\uppercase{Madhu Sudhan}\authorrefmark{2}}
 
-\tfootnote{This work was conducted as part of a Practicum project. Details omitted for double-blind review.}
+\address[1]{Division of Programs in Business, School of Professional Studies, New York University, New York, NY 10003 USA (e-mail: kj2578@nyu.edu)}
+\address[2]{Department of Computer Science and Engineering, Dayananda Sagar Institutions, Bengaluru 560078, India (e-mail: madhu.sudhan@example.com)}
 
-\markboth{Anonymous \textit{et al.}: Rethinking Juliet: Structural Leakage and Benchmark Validity in Automated Vulnerability Detection}
-{Anonymous \textit{et al.}: Rethinking Juliet: Structural Leakage and Benchmark Validity in Automated Vulnerability Detection}
+\tfootnote{This work was carried out as part of a graduate practicum project in the M.S. in Management and Systems program, School of Professional Studies, New York University.}
+
+\markboth
+{K. Jadhav, M. Sudhan: Rethinking Juliet: Structural Leakage and Benchmark Validity in Automated Vulnerability Detection}
+{K. Jadhav, M. Sudhan: Rethinking Juliet: Structural Leakage and Benchmark Validity in Automated Vulnerability Detection}
+
+\corresp{Corresponding author: Kruthik Jadhav (e-mail: kj2578@nyu.edu).}
 
 \begin{abstract}
-Despite near-perfect F1 scores reported by transformer-based models on the Juliet C/C++ Test Suite, the extent to which these scores reflect genuine vulnerability detection capability has not been rigorously examined. This paper investigates that question through a controlled diagnostic study. We trained four structurally diverse classifiers on a deduplicated version of Juliet with programmatically verified zero train-test overlap: a TF-IDF Random Forest, CodeBERT, GraphCodeBERT, and a hybrid CodeBERT-GraphCodeBERT fusion. All four achieved F1 scores between 0.979 and 1.000. We then evaluated the best-performing transformer on a curated set of 35 hand-written out-of-distribution C/C++ samples and observed 51.4\% overall accuracy; at this sample size (18 vulnerable, 17 safe) the figure is statistically indistinguishable from the 50\% baseline (95\% Wilson score confidence interval [35.6\%, 67.0\%]), and because the suite is adversarial by design, these results indicate a qualitative failure mode rather than a generalisable accuracy metric.
-
-To understand this discrepancy, we conducted a structural analysis of the Juliet dataset and identified three co-occurring artefacts that make the two classes separable without vulnerability semantic understanding: a 4.2$\times$ code length disparity, zero function name overlap across 42,005 unique identifiers, and annotation comments embedding explicit vulnerability labels exclusively in vulnerable function bodies. The discriminative power of these artefacts is directly measurable: a single-feature classifier trained only on code length achieves 99.25\% accuracy on the test set. In the out-of-distribution evaluation, the model correctly identified all 18 vulnerable samples but failed on all 17 safe samples, including 0/10 on safe code using dangerous APIs correctly and 0/7 on adversarial cases containing no dangerous tokens at all. This failure pattern provides strong evidence that the model predicts vulnerability based on the presence of specific API tokens rather than their usage context. We further show that CodeBERT attention weights are non-causal under these conditions, with an average perturbation delta of $5\times10^{-6}$. These findings suggest that benchmark performance on Juliet is driven by structural pattern exploitation and that external out-of-distribution evaluation is essential before results on this benchmark inform conclusions about real-world detection capability.
+Transformer-based models routinely report near-perfect F1 scores on the Juliet C/C++ Test Suite, yet whether those scores reflect genuine vulnerability-detection ability has not been examined rigorously. In a controlled diagnostic study, four structurally diverse classifiers were trained on a deduplicated version of Juliet with programmatically verified zero overlap between the training and test partitions: a term frequency-inverse document frequency Random Forest, CodeBERT, GraphCodeBERT, and a hybrid of the two transformers. All four reached F1 scores between 0.979 and 1.000. Evaluated on 35 hand-written out-of-distribution C/C++ functions, the strongest transformer scored only 51.4 percent, a value statistically indistinguishable from the 50 percent baseline (95 percent confidence interval, 35.6 to 67.0 percent). A structural analysis then identifies three co-occurring artifacts that separate the classes without semantic understanding: a fourfold disparity in code length, no function-name overlap across 42,005 identifiers, and annotation comments that embed explicit vulnerability labels in vulnerable functions only. A classifier that uses code length as its only feature reaches 99.25 percent test accuracy. On the out-of-distribution set, the model flagged all 18 vulnerable functions but also all 17 safe ones, a pattern consistent with decisions driven by token presence rather than token usage. CodeBERT attention weights are further shown to be noncausal under these conditions. Measured performance on Juliet therefore reflects the exploitation of structural regularities, and external evaluation is essential before such results inform claims about real-world detection.
 \end{abstract}
 
 \begin{keywords}
-vulnerability detection, transformer models, benchmark evaluation, dataset artefacts, CodeBERT, GraphCodeBERT, Juliet Test Suite, explainability, attention faithfulness
+Attention faithfulness, benchmark validity, CodeBERT, dataset artifacts, deep learning, GraphCodeBERT, Juliet Test Suite, out-of-distribution evaluation, software vulnerability detection, transformer models
 \end{keywords}
+
+\titlepgskip=-21pt
 
 \maketitle
 
 %=======================================================================
 \section{Introduction}
 \label{sec:intro}
+\PARstart{S}{ecurity} vulnerabilities in software have proven difficult to eliminate despite decades of investment in detection tooling. Memory-management errors, injection flaws, and arithmetic mistakes in C and C++ remain among the most exploited weakness classes in deployed systems, and the interval between the introduction of a vulnerability and its eventual discovery is still measured in months~\cite{chakraborty2022deep}. Machine-learning approaches have attracted sustained research attention as a means of closing this gap, offering the prospect of learning to recognize dangerous patterns automatically rather than encoding them by hand.
 
-Security vulnerabilities in software have proven difficult to eliminate despite decades of investment in detection tooling. Memory management errors, injection flaws, and arithmetic mistakes in C and C++ code remain among the most exploited weakness classes in deployed systems, and the time between a vulnerability's introduction and its eventual discovery continues to be measured in months~\cite{chakraborty2022deep}. Machine learning approaches have attracted considerable research attention as a way to close this gap, with the appeal of learning to detect dangerous patterns automatically rather than encoding them by hand.
+The field has progressed through several generations of methods. Early systems combined hand-crafted features derived from abstract syntax trees and program slices with conventional classifiers~\cite{li2018vuldeepecker, li2021sysevr}. Graph neural networks subsequently incorporated structural program semantics, including control flow and data flow~\cite{devign2019}. More recently, large pretrained transformer models for code, in particular CodeBERT~\cite{feng2020codebert} and GraphCodeBERT~\cite{guo2020graphcodebert}, have been fine-tuned on benchmark datasets and have reported F1 scores approaching 1.000. These results have been cited as evidence of genuine progress toward reliable automated detection.
 
-The field progressed through several generations of approaches. Early systems used hand-crafted features derived from abstract syntax trees and program slices fed into traditional classifiers~\cite{li2018vuldeepecker, li2021sysevr}. Graph neural networks incorporated structural program semantics including control flow and data flow~\cite{devign2019}. More recently, large pretrained transformer models for code, particularly CodeBERT~\cite{feng2020codebert} and GraphCodeBERT~\cite{guo2020graphcodebert}, have been fine-tuned on benchmark datasets and reported F1 scores approaching 1.000. These results have been cited as evidence of genuine progress toward reliable automated detection.
+A parallel line of research has questioned that interpretation. Chakraborty et al.~\cite{chakraborty2022deep} showed that 68 percent of the samples in the widely used Devign dataset are near-duplicates shared across the training and test splits, and that correcting for this contamination reduces model F1 by more than 50 percentage points. A subsequent study~\cite{chakraborty2024revisiting} applied the same analysis to LineVul, a strong CodeBERT-based line-level detector, and reported a decline in F1 from 0.90 to 0.02 on a clean re-split. Guo and Bettaieb~\cite{guo2023quality} identified duplication as the dominant quality problem across 54 vulnerability-detection datasets.
 
-A parallel line of research has challenged this interpretation. Chakraborty et al.~\cite{chakraborty2022deep} showed that 68\% of samples in the widely used Devign dataset are near-duplicates across training and test splits, and that correcting for this drops model F1 by over 50 percentage points. Their follow-up work~\cite{chakraborty2024revisiting} found that LineVul, a strong CodeBERT-based detector, scores F1 = 0.02 on a clean Devign re-split. Guo and Bettaieb~\cite{guo2023quality} identified duplication as the dominant quality problem across 54 vulnerability detection datasets.
-
-The Juliet C/C++ Test Suite~\cite{juliet2017} has not received comparable scrutiny. It is synthetic rather than drawn from real CVE patches, covers 118 CWE categories, and is the most widely used C/C++ vulnerability benchmark in the literature. Prior work has noted in passing that its structure may support pattern matching~\cite{chakraborty2022deep}, but no study has identified which specific properties drive classifier performance, measured their individual discriminative power, or confirmed the resulting generalisation failure through external evaluation. This paper addresses that gap. Our contributions are:
+The Juliet C/C++ Test Suite~\cite{juliet2017} has not been subjected to comparable scrutiny. It is synthetic rather than derived from real patches for entries in the Common Vulnerabilities and Exposures (CVE) list, it covers 118 Common Weakness Enumeration (CWE) categories, and it is the most widely used C/C++ vulnerability benchmark in the literature. Prior work has observed in passing that its structure may facilitate pattern matching~\cite{chakraborty2022deep}, but no study has identified which specific properties drive classifier performance, quantified their individual discriminative power, or confirmed the resulting generalization failure through external evaluation. This article addresses that gap. Its contributions are as follows.
 
 \begin{itemize}
-    \item A four-model controlled evaluation on a deduplicated Juliet benchmark with programmatically verified zero train-test overlap, showing that a TF-IDF Random Forest achieves identical or better performance than a 125-million-parameter graph-aware transformer.
-    \item The identification and direct quantification of three co-occurring structural artefacts in Juliet C/C++ that make the benchmark classes separable without vulnerability semantic understanding, including a single-feature length classifier achieving 99.25\% test accuracy.
-    \item An out-of-distribution evaluation on 35 hand-written C/C++ samples designed to probe the token-bias failure mode, finding 51.4\% overall accuracy with 0/10 on safe lookalikes and 0/7 on adversarial cases containing no dangerous tokens.
-    \item A perturbation-based faithfulness evaluation of CodeBERT attention weights under class-biased prediction conditions, contributing empirical evidence to the ongoing debate on explanation reliability in code intelligence.
+    \item A four-model controlled evaluation on a deduplicated Juliet benchmark with programmatically verified zero train--test overlap, showing that a term frequency-inverse document frequency (TF-IDF) Random Forest matches or exceeds the performance of a 125-million-parameter graph-aware transformer.
+    \item The identification and direct quantification of three co-occurring structural artifacts in Juliet C/C++ that render the benchmark classes separable without any semantic understanding of vulnerabilities, including a single-feature length classifier that achieves 99.25 percent test accuracy.
+    \item An out-of-distribution evaluation on 35 hand-written C/C++ functions designed to probe the token-bias failure mode, which yields 51.4 percent overall accuracy, with no correct classifications on 10 safe look-alike functions or on 7 adversarial functions that contain no dangerous tokens.
+    \item A perturbation-based faithfulness evaluation of CodeBERT attention weights under class-biased prediction conditions, contributing empirical evidence to the continuing debate on explanation reliability in code intelligence.
 \end{itemize}
 
 %=======================================================================
-\section{Background and Related Work}
+\section{Background and History}
 \label{sec:related}
 
-\subsection{Vulnerability Detection with Deep Learning}
+\subsection{Deep Learning for Vulnerability Detection}
+VulDeePecker~\cite{li2018vuldeepecker} introduced program-slice representations classified by bidirectional long short-term memory networks, demonstrating that learned models could identify vulnerability patterns without manually written rules. SySeVR~\cite{li2021sysevr} extended this approach with four syntax-aware representation types intended to cover a broader range of weakness classes. The Devign model~\cite{devign2019} represented C programs as composite graphs that encode abstract syntax, control flow, data flow, and call relationships, and reported strong performance on the Devign benchmark.
 
-VulDeePecker~\cite{li2018vuldeepecker} introduced program-slice representations classified by bidirectional LSTMs, demonstrating that learned models could identify vulnerability patterns without manually written rules. SySeVR~\cite{li2021sysevr} extended this approach with four syntax-aware representation types designed to cover a broader range of weakness classes. The Devign model~\cite{devign2019} represented C programs as composite graphs encoding abstract syntax, control flow, data flow, and call relationships, achieving strong performance on the Devign benchmark.
-
-Chakraborty et al.~\cite{chakraborty2022deep} re-evaluated these systems after removing near-duplicate samples from benchmark splits and found F1 drops exceeding 50 percentage points across models. Their follow-up study~\cite{chakraborty2024revisiting} applied the same analysis to LineVul, a CodeBERT-based line-level detector, observing an F1 collapse from 0.90 to 0.02. These results established that transformer fine-tuning on contaminated splits amplifies memorisation rather than generalisation.
+Chakraborty et al.~\cite{chakraborty2022deep} reevaluated these systems after removing near-duplicate samples from the benchmark splits and observed F1 reductions exceeding 50 percentage points across models. A subsequent study~\cite{chakraborty2024revisiting} applied the same analysis to LineVul, a CodeBERT-based line-level detector, and reported a decline in F1 from 0.90 to 0.02. Together, these results established that fine-tuning transformers on contaminated splits amplifies memorization rather than generalization.
 
 \subsection{Transformer Models for Code}
-
-The transformer architecture~\cite{vaswani2017attention} and large-scale pretraining reshaped code intelligence research. CodeBERT~\cite{feng2020codebert} adapted RoBERTa-style pretraining to a bimodal setting, training on 6.4 million code-documentation pairs from GitHub across six programming languages. The resulting contextual code representations transfer well to downstream classification tasks. GraphCodeBERT~\cite{guo2020graphcodebert} incorporated variable-level data-flow graphs into pretraining, adding structural program semantics to the pretraining process. Both models have been widely adopted for vulnerability detection applications.
+The transformer architecture~\cite{vaswani2017attention}, combined with large-scale pretraining, reshaped research on code intelligence. CodeBERT~\cite{feng2020codebert} adapted RoBERTa-style pretraining to a bimodal setting, training on 6.4 million code--documentation pairs drawn from GitHub across six programming languages; the resulting contextual code representations transfer well to downstream classification tasks. GraphCodeBERT~\cite{guo2020graphcodebert} added variable-level data-flow graphs to the pretraining objective, incorporating structural program semantics. Both models have been widely adopted for vulnerability detection.
 
 \subsection{Dataset Quality and Benchmark Validity}
+Guo and Bettaieb~\cite{guo2023quality} surveyed 54 vulnerability-detection datasets and identified duplication, label noise, class imbalance, temporal leakage, and gaps in representativeness as recurring quality problems, with duplication consistently associated with inflated performance estimates. Their findings underscore the importance of rigorous dataset evaluation in benchmarking studies.
 
-Guo and Bettaieb~\cite{guo2023quality} surveyed 54 vulnerability detection datasets and identified duplication, label noise, class imbalance, temporal leakage, and representativeness gaps as recurring quality problems, with duplication consistently correlating with inflated performance estimates. Their findings underscore the importance of rigorous dataset evaluation in benchmarking studies.
-
-Juliet~\cite{juliet2017} generates paired vulnerable and safe function implementations from shared CWE templates, producing a large synthetic dataset with broad CWE coverage. BigVul~\cite{fan2020bigvul}, drawn from real CVE-linked GitHub commits, yields F1 scores of 0.50--0.70 for best-performing models, substantially below Juliet figures. This significant gap has motivated the diagnostic work presented in this paper.
+Juliet~\cite{juliet2017} generates paired vulnerable and safe function implementations from shared CWE templates, producing a large synthetic dataset with broad CWE coverage. BigVul~\cite{fan2020bigvul}, which is drawn from real CVE-linked GitHub commits, yields F1 scores of 0.50 to 0.70 for the best-performing models, substantially below the figures reported for Juliet. This gap motivates the diagnostic work presented here.
 
 \subsection{Explanation Faithfulness in Machine Learning}
-
-Jain and Wallace~\cite{jain2019attention} showed that attention distributions in sequence classifiers can be permuted without meaningfully changing predictions, challenging their use as faithful explanations. Wiegreffe and Pinter~\cite{wiegreffe2019attention} contested this, arguing that the architecture and task mediate the faithfulness relationship. Prior work has not examined faithfulness in models that have learned class-biased degenerate solutions, which is the specific setting this paper addresses.
+Jain and Wallace~\cite{jain2019attention} showed that the attention distributions of sequence classifiers can be permuted without materially changing predictions, which calls into question their use as faithful explanations. Wiegreffe and Pinter~\cite{wiegreffe2019attention} contested this conclusion, arguing that the architecture and the task mediate the relationship between attention and faithfulness. Prior work has not examined faithfulness in models that have learned class-biased degenerate solutions, which is the specific setting considered here.
 
 %=======================================================================
-\section{Methodology: Dataset Preparation and Preprocessing}
-\label{sec:dataset}
+\section{Detailed Explanation of Recent Findings}
+\label{sec:findings}
+This section describes the dataset preparation, the four models, and the empirical results in full. It first establishes that every model reaches ceiling performance on a rigorously deduplicated benchmark, then identifies the structural properties of Juliet that make this possible, and finally shows, through out-of-distribution testing and an attention-faithfulness analysis, that the learned decision rule is based on token presence rather than on vulnerability semantics.
 
 \subsection{The Juliet C/C++ Test Suite}
+\label{sec:dataset}
+Juliet~\cite{juliet2017} was developed by the National Security Agency and is maintained by the National Institute of Standards and Technology (NIST) as part of the Software Assurance Reference Dataset initiative. It generates paired vulnerable and safe C/C++ function implementations for 118 CWE categories from shared templates. We extracted 116,263 function-level samples spanning 109 CWE categories. The raw label distribution was 66.7 percent vulnerable and 33.3 percent safe, which reflects the fixed generation ratio built into Juliet's template structure.
 
-Juliet~\cite{juliet2017} was developed by the National Security Agency and is maintained by NIST as part of the Software Assurance Reference Dataset initiative. It generates paired vulnerable and safe C/C++ function implementations for 118 CWE categories from shared templates. We extracted 116,263 function-level samples across 109 CWE categories. The raw label distribution was 66.7\% vulnerable and 33.3\% safe, reflecting the fixed generation ratio built into Juliet's template structure.
+\subsection{Data Extraction and Preprocessing}
+The extraction pipeline operated in four stages. First, all C and C++ source files were indexed recursively, and CWE identifiers were extracted from the directory paths. Second, regular-expression matching extracted individual functions from the source files, retaining the source code, the function name, the CWE identifier, and the file path; this was feasible because Juliet's templates produce highly regular source files, and extraction accuracy was verified by manual inspection of randomly sampled functions. Third, labels were assigned from Juliet's naming conventions (\texttt{\_bad} for vulnerable and \texttt{\_good} for safe), and a sanitization step removed the most obvious label-leaking tokens from the function names. Fourth, label balance and extraction quality were validated through statistical analysis.
 
-\subsection{Data Extraction and Preprocessing Pipeline}
+During early experiments, an incorrect path in the pipeline referenced a corrupted intermediate file and produced a training set that was 99.96 percent vulnerable. Diagnostic testing identified and corrected the error; the corrected pipeline yields 57.79 percent vulnerable and 42.21 percent safe samples.
 
-Our extraction pipeline operated in four distinct stages. First, all C and C++ source files were indexed recursively with CWE identifiers extracted from directory paths. Second, regex-based function extraction pulled individual functions from source files, retaining source code, function name, CWE identifier, and file path. Regex extraction was feasible because Juliet's template structure produces highly regular source files; extraction accuracy was verified through manual inspection of randomly sampled functions. Third, labels were assigned using Juliet's naming conventions (\texttt{\_bad} for vulnerable, \texttt{\_good} for safe), with sanitisation removing the most obvious label-leaking tokens from function names. Fourth, label balance and extraction quality were validated through statistical analysis.
-
-During early experiments, an incorrect file path in the pipeline referenced a corrupted intermediate file, producing a 99.96\% vulnerable training set. Diagnostic testing caught and corrected this error. The corrected pipeline yields 57.79\% vulnerable and 42.21\% safe samples.
-
-\subsection{Deduplication and Train-Test Splitting}
-
-A standard 80/10/10 random split on the raw extracted data produced validation and test sets with 31--32\% overlap with the training set, matching the contamination pattern documented for other benchmarks~\cite{chakraborty2022deep}. To address this issue, we applied exact-string deduplication before splitting, reducing the dataset from 116,263 to 91,619 unique functions. Stratified sampling over (CWE, label) pairs preserved class balance within each CWE category across all three partitions. Overlap between splits was verified programmatically using set operations, confirming zero overlap in both held-out partitions (Table~\ref{tab:splits}).
+\subsection{Deduplication and Train--Test Splitting}
+A standard 80/10/10 random split of the raw extracted data produced validation and test sets with 31 to 32 percent overlap with the training set, matching the contamination pattern documented for other benchmarks~\cite{chakraborty2022deep}. To remove this overlap, exact-string deduplication was applied before splitting, which reduced the dataset from 116,263 to 91,619 unique functions. Stratified sampling over (CWE, label) pairs preserved the class balance within each CWE category across all three partitions. Overlap between partitions was then verified programmatically using set operations, which confirmed zero overlap in both held-out partitions (Table~\ref{tab:splits}).
 
 \begin{table}[h]
 \centering
@@ -120,49 +133,42 @@ Test       &  9,162 & 57.80 & 42.20 & 0 \\
 
 \subsection{Structural Leakage Analysis}
 \label{sec:validity}
+After training, and after observing near-perfect scores for every model, we analyzed the dataset systematically to determine what the classifiers were actually learning. Three structural properties provide nonsemantic separation between the two classes.
 
-After training and observing near-perfect scores across all models, we conducted a systematic analysis of the dataset to understand what the classifiers were actually learning. Three structural properties emerged that provide non-semantic separation between the two classes:
+\subsubsection{Code-length disparity}
+Vulnerable functions average 429 characters (median 385), whereas safe functions average 101 characters (median 98), a fourfold gap that arises directly from Juliet's generation process: vulnerable variants contain full implementation bodies, while safe variants are frequently minimal wrappers. To measure the discriminative power of this single feature, a depth-one decision tree was trained on character count alone; it achieves \textbf{99.25 percent} accuracy on the held-out test set without inspecting any code content.
 
-\textbf{Code Length Disparity.} Vulnerable functions average 429 characters (median 385); safe functions average 101 characters (median 98), a 4.2$\times$ gap arising directly from Juliet's generation process. Vulnerable variants include full implementation bodies while safe variants are often minimal wrappers. To measure the discriminative power of this single feature, we trained a depth-1 decision tree on character count alone. It achieved \textbf{99.25\% accuracy} on the held-out test set without reading any code content.
+\subsubsection{Function-naming patterns}
+Juliet assigns function names according to a strict convention tied to data-flow direction (for example, \texttt{goodG2B} and \texttt{goodB2G}). Across the 42,005 unique function names in the training partition, no name occurs in both the vulnerable and the safe class. The sanitization step removed the most obvious leaking identifiers (\texttt{bad} and \texttt{good}), but the \texttt{G2B} and \texttt{B2G} substrings remain. A name-pattern classifier achieves perfect separation on the test set, which indicates that this artifact alone is sufficient for complete classification.
 
-\textbf{Function Naming Patterns.} Juliet assigns function names according to a strict convention tied to data flow direction (e.g., \texttt{goodG2B}, \texttt{goodB2G}). Across 42,005 unique function names in the training partition, zero names appear in both the vulnerable and safe classes. Our sanitisation step removed the most obvious leaking identifiers (\texttt{bad}, \texttt{good}) but the \texttt{G2B}/\texttt{B2G} substrings persist. A name-pattern classifier achieves perfect test-set separation, indicating this artefact alone is sufficient for complete classification.
+\subsubsection{Annotation comments with explicit labels}
+Juliet embeds documentation comments inside vulnerable function bodies that describe the demonstrated weakness. Tokens such as \texttt{FLAW} (1,940 occurrences, versus 0 in safe functions), \texttt{POTENTIAL} (1,689 versus 0), \texttt{FIX} (1,530 versus 0), and \texttt{INCIDENTAL} (346 versus 0) constitute explicit label leakage in the training inputs. Exact-string deduplication removes duplicate code strings but leaves these annotation tokens intact, so they persist as residual leakage throughout the deduplicated benchmark. This artifact is confirmed in Section~\ref{sec:ood}, where a test function that contains only the word ``flaw'' in a comment is classified as vulnerable with a confidence of 0.9999.
 
-\textbf{Annotation Comments with Explicit Labels.} Juliet embeds documentation comments inside vulnerable function bodies explaining the demonstrated weakness. Tokens such as \texttt{FLAW} (1,940 occurrences, 0 in safe functions), \texttt{POTENTIAL} (1,689 vs 0), \texttt{FIX} (1,530 vs 0), and \texttt{INCIDENTAL} (346 vs 0) constitute explicit label leakage in the training inputs. Exact-string deduplication removes duplicate code strings but leaves these annotation tokens intact, so they persist as residual leakage throughout the deduplicated benchmark. This artefact is directly confirmed in Section~\ref{sec:ood} by a test case sample containing only the word ``flaw'' in a comment, which the model classifies as vulnerable with 0.9999 confidence.
-
-%=======================================================================
-\section{Experimental Setup: Models and Evaluation}
+\subsection{Models and Experimental Setup}
 \label{sec:models}
 
-\subsection{Random Forest Baseline}
+\subsubsection{Random Forest baseline}
+A Random Forest with 100 estimators (random seed 42) was trained on TF-IDF bag-of-words vectors of the function source code. The vocabulary was restricted to the 10,000 most frequent unigrams and bigrams with a minimum document frequency of 5. This baseline tests whether benchmark performance can be explained entirely by surface token statistics.
 
-A Random Forest with 100 estimators (random seed 42) was trained on TF-IDF bag-of-words vectors from function source code. The vocabulary was limited to the 10,000 most frequent unigrams and bigrams with minimum document frequency of 5. This baseline tests whether benchmark performance is fully explained by surface token statistics.
+\subsubsection{CodeBERT}
+CodeBERT was fine-tuned with the HuggingFace \texttt{transformers} library (version 4.20.2) using a classification head consisting of a 768-dimensional dense layer with rectified linear unit (ReLU) activation, dropout of 0.1, and a softmax output layer. Optimization used AdamW (learning rate $2\times10^{-5}$, weight decay 0.01) with a batch size of 32 for 10 epochs, with early stopping (patience 3) on validation F1. The model was evaluated on the deduplicated test set.
 
-\subsection{CodeBERT Fine-tuning}
+\subsubsection{GraphCodeBERT}
+GraphCodeBERT was fine-tuned under the same hyperparameter settings as CodeBERT. Data-flow graphs were extracted from each function with the parser released by the GraphCodeBERT authors and supplied to the model alongside the source-code tokens, so that the model attended over both representations during training and evaluation.
 
-CodeBERT was fine-tuned using the HuggingFace \texttt{transformers} library (version 4.20.2) with a classification head: a 768-dimensional dense layer with ReLU activation, dropout 0.1, and a softmax output layer. The optimizer was AdamW (learning rate $2\times 10^{-5}$, weight decay 0.01). Training proceeded for 10 epochs with early stopping (patience 3, validation metric F1). Batch size was 32. The model was evaluated on the deduplicated test set.
-
-\subsection{GraphCodeBERT Fine-tuning}
-
-GraphCodeBERT was fine-tuned under identical hyperparameter settings as CodeBERT. Additional setup involved extracting data-flow graphs from each function using the open-source DFG parser maintained by the GraphCodeBERT authors. The DFG inputs were provided to the model alongside the source code tokens, allowing the model to attend over both representations during training and evaluation.
-
-\subsection{Hybrid Fusion Model}
-
-The hybrid model concatenated the final-layer representations from CodeBERT and GraphCodeBERT (a 1536-dimensional vector) and passed this through a two-layer feedforward classifier: (1536 $\to$ 256 $\to$ 2) with ReLU activations and dropout 0.1 between layers. Both encoder components were frozen; only the fusion classifier was trained, using AdamW and identical hyperparameters. This design tests whether representation combination can improve robustness to spurious correlations.
-
-%=======================================================================
-\section{Results and Discussion}
-\label{sec:results}
+\subsubsection{Hybrid fusion model}
+The hybrid model concatenated the final-layer representations of CodeBERT and GraphCodeBERT into a 1,536-dimensional vector and passed it through a two-layer feedforward classifier ($1{,}536 \rightarrow 256 \rightarrow 2$) with ReLU activations and dropout of 0.1 between layers. Both encoders were frozen, and only the fusion classifier was trained, using AdamW with the hyperparameters above. This design tests whether combining representations improves robustness to spurious correlations.
 
 \subsection{In-Distribution Performance}
-
-All four models achieved ceiling performance on the deduplicated Juliet test set (Table~\ref{tab:model_results}). The Random Forest achieved 100.00\% F1; CodeBERT 98.76\%; GraphCodeBERT 97.91\%; and the hybrid model 98.65\%. This result is striking: a bag-of-words model equals or exceeds the performance of a 125-million-parameter pretrained transformer, suggesting that the benchmark does not reward the semantic reasoning capabilities these models were designed to provide. The similarity of performance across architecturally diverse models points toward benchmark-level confounding rather than learned representations.
+\label{sec:results}
+All four models reached ceiling performance on the deduplicated Juliet test set (Table~\ref{tab:model_results}). The Random Forest achieved an F1 score of 100.00 percent; CodeBERT, 98.76 percent; GraphCodeBERT, 97.91 percent; and the hybrid model, 98.65 percent. This outcome is notable: a bag-of-words model equals or exceeds a 125-million-parameter pretrained transformer, which indicates that the benchmark does not reward the semantic reasoning that these models were designed to provide. The similarity of results across architecturally diverse models points to benchmark-level confounding rather than to learned representations.
 
 \begin{table}[t]
 \centering
-\caption{In-Distribution Performance on Deduplicated Juliet Test Set}
+\caption{In-distribution performance on the deduplicated Juliet test set}
 \label{tab:model_results}
 \resizebox{\columnwidth}{!}{%
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccc}
 \toprule
 \textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
 \midrule
@@ -177,77 +183,70 @@ Hybrid (CB+GCB)     & 98.65\% & 0.9825 & 0.9906 & 0.9865 \\
 
 \subsection{Out-of-Distribution Evaluation}
 \label{sec:ood}
-
-To test whether the models had learned to detect vulnerabilities or merely to recognise Juliet's leakage patterns, we hand-wrote 35 C/C++ samples designed to probe specific failure modes:
+To determine whether the models detect vulnerabilities or merely recognize Juliet's leakage patterns, we wrote 35 C/C++ functions by hand to probe specific failure modes.
 
 \begin{itemize}
-    \item \textbf{Safe Lookalikes (10 samples):} Safe code using dangerous APIs (e.g., \texttt{strncpy}, \texttt{snprintf}, \texttt{strcpy}) correctly in security-aware contexts.
-    \item \textbf{Adversarial Cases (7 samples):} Code containing no dangerous tokens but structured to trigger token-based heuristics (e.g., a comment containing the word ``flaw'').
-    \item \textbf{Vulnerable Samples (18 samples):} Real vulnerability patterns extracted from published CVE advisories.
+    \item \textbf{Safe look-alikes (10 functions):} safe code that uses dangerous application programming interfaces (APIs) such as \texttt{strncpy}, \texttt{snprintf}, and \texttt{strcpy} correctly in security-aware contexts.
+    \item \textbf{Adversarial cases (7 functions):} code that contains no dangerous tokens but is structured to trigger token-based heuristics, for example, a comment containing the word ``flaw''.
+    \item \textbf{Vulnerable functions (18 functions):} real vulnerability patterns taken from published CVE advisories.
 \end{itemize}
 
-The best CodeBERT model was evaluated on this set. Results showed 51.4\% overall accuracy: it correctly identified all 18 vulnerable samples (100\% recall on vulnerabilities) but failed on all 17 safe samples (0\% precision on safety). The 95\% Wilson score confidence interval is [35.6\%, 67.0\%], encompassing 50\%, indicating statistical indistinguishability from random guessing at this sample size. More tellingly, the failure pattern is consistent: the model predicted VULNERABLE for every safe sample without exception.
+The best CodeBERT model was evaluated on this set and achieved 51.4 percent overall accuracy: it correctly identified all 18 vulnerable functions (100 percent recall on vulnerabilities) but misclassified all 17 safe functions (0 percent precision on safety). The 95 percent Wilson score confidence interval is 35.6 to 67.0 percent, which contains 50 percent and therefore cannot be distinguished from random guessing at this sample size. The failure pattern is uniform: the model predicted \textsc{vulnerable} for every safe function without exception. Because the suite is adversarial by design, this figure denotes a qualitative failure mode rather than a general accuracy estimate.
 
 \subsection{Token-Based Decision-Making}
+To characterize the mechanism behind this failure, we examined predictions on individual adversarial cases. One function consisted of an empty body with the single comment \texttt{// FLAW}; the model classified it as vulnerable with a confidence of 0.9999, although it contains no executable code. Another function consisted of the arithmetic statement \texttt{int x = 5 + 3;} inside a function name that contains the substring \texttt{bad}; the model classified it as vulnerable with a confidence of 0.9998. These cases provide direct evidence that the model applies a token-matching rule rather than reasoning about vulnerabilities: it does not analyze API call sequences, data flow, or control flow, but instead recognizes specific tokens, in particular the weakness-category indicators embedded in Juliet, and predicts accordingly.
 
-To understand the mechanism underlying this failure, we examined model predictions on specific adversarial cases. One sample consisted of an empty function body with a single comment: \texttt{// FLAW}. The model classified this with 0.9999 confidence as vulnerable, despite the function containing no executable code. Another sample was an arithmetic operation (\texttt{int x = 5 + 3;}) embedded in a function name containing the substring \texttt{bad}. The model classified this as vulnerable with 0.9998 confidence.
+\subsection{Attention-Faithfulness Analysis}
+The faithfulness of CodeBERT's attention weights was evaluated with a perturbation-based procedure. For each attention head in the final layer, token representations were masked one at a time and the change in the model's prediction logit was recorded. Under a faithful mechanism, masking an important token should produce a large change in the prediction, whereas masking an unimportant token should produce a small change. The measured attention was noncausal: the mean perturbation delta was $5\times10^{-6}$ across all masked tokens, with a standard deviation of $2.5\times10^{-6}$. This near-zero response indicates that the attention mechanism does not contribute causally to the decision. The predictions are robust to arbitrary token masking, which confirms that the decision is made above the level of individual token representations, at the level of global token-presence statistics.
 
-These observations provide direct evidence that the model has learned a token-matching strategy rather than vulnerability reasoning. The model does not analyse API call sequences, data flow, or control flow; it recognises specific tokens (particularly the vulnerability category indicators embedded in Juliet) and predicts accordingly.
-
-\subsection{Attention Faithfulness Analysis}
-
-We evaluated the faithfulness of CodeBERT attention weights using a perturbation-based approach. For each attention head in the final layer, we masked token representations one at a time and measured the change in the model's prediction logit. Under faithfulness, important tokens should produce large prediction changes when masked; unimportant tokens should produce small changes.
-
-The results revealed non-causal attention: average perturbation delta was $5\times10^{-6}$ across all masked tokens, with a standard deviation of $2.5\times10^{-6}$. This near-zero gradient indicates that the attention mechanism is not causally contributing to the prediction decision. The model's predictions are robust to arbitrary token masking, confirming that the decision-making process operates at a level above individual token representations---specifically, at the level of global token presence statistics.
-
-%=======================================================================
-\section{Threats to Validity}
+\subsection{Threats to Validity}
 \label{sec:threats}
+Exact-string deduplication does not remove near-duplicate functions that differ only in variable names or whitespace, so some semantic overlap probably remains in the partitions. The annotation-comment tokens that constitute the third artifact survive deduplication entirely, so the reported scores on the clean evaluation may still overstate true performance. Table~\ref{tab:model_results} was not recomputed with these tokens removed from the input, so the individual contribution of annotation leakage, relative to the length and naming artifacts, is not isolated here; this is a direct limitation of the present results. The regular-expression extraction pipeline may also handle nonstandard function formatting inconsistently; extraction quality was assessed by manual inspection of randomly sampled functions, but a formal false-positive rate was not established.
 
-Exact-string deduplication does not remove near-duplicate functions differing only in variable names or whitespace. Some semantic overlap likely persists in the splits. The annotation comment tokens constituting Artefact 3 survive deduplication entirely, meaning benchmark scores may overstate true performance on the clean evaluation. We did not re-evaluate Table~\ref{tab:model_results} with these tokens stripped from the input text, so the relative contribution of annotation leakage versus the length and naming artefacts to the reported ceiling is not separately isolated; this is a direct limitation of the current results. The regex extraction pipeline may handle non-standard function formatting inconsistently; extraction quality was assessed through manual inspection of randomly sampled functions, though a formal false-positive rate was not established.
+The faithfulness experiment characterizes the failure mode of a class-biased model and does not generalize to well-calibrated classifiers: a model that predicts a single class with near-certainty for every input will produce near-zero perturbation deltas regardless of which token is masked. The attention-aggregation strategy used here (final layer, classification-token row, averaged over heads) is one of several defensible choices; alternatives such as gradient-weighted attention or attention rollout might rank evidence differently. The frozen-encoder design of the hybrid model evaluates the combination of representations rather than joint training; end-to-end fine-tuning might alter out-of-distribution behavior. All experiments used the C/C++ subset of Juliet; whether the same artifacts occur in the other language variants of Juliet, in other synthetic benchmarks, or in real-CVE datasets such as BigVul and Devign is not established here.
 
-The faithfulness experiment characterises the failure mode of a class-biased model but cannot generalise to well-calibrated classifiers. A model predicting a single class with near-certainty for all inputs will produce near-zero perturbation deltas regardless of what tokens are masked. The attention aggregation strategy used (final-layer, CLS-row, head-averaged) is one of several valid approaches; alternatives including gradient-weighted attention or layer rollout might yield different evidence rankings. The frozen encoder design of the hybrid model evaluates representation combination rather than joint learning; end-to-end fine-tuning might change out-of-distribution behaviour. All experiments used the C/C++ subset of Juliet; whether the same artefacts appear in Juliet's other language variants, in other synthetic benchmarks, or in real-CVE datasets such as BigVul and Devign, is not established here.
-
-The out-of-distribution evaluation suite was designed to probe specific failure modes identified by the artefact analysis rather than to provide a statistically powered general performance estimate. Findings from this suite should be read as evidence of a consistent failure pattern rather than a precise accuracy measurement.
-
-%=======================================================================
-\section{Conclusions and Future Directions}
-\label{sec:future}
-
-We investigated why transformer models achieve near-perfect scores on the Juliet C/C++ benchmark and found that three structural artefacts in the dataset provide the answer: a 4.2$\times$ code length gap, zero function name overlap across 42,005 identifiers, and annotation comments that embed explicit vulnerability labels in training inputs and survive deduplication. A classifier using only code length achieves 99.25\% test accuracy. A bag-of-words Random Forest achieves 100.00\%. A 125-million-parameter graph-aware transformer achieves the same.
-
-When we evaluated the best-performing transformer on 35 hand-written out-of-distribution samples, it scored 51.4\%, statistically indistinguishable from chance at this sample size (95\% Wilson score confidence interval [35.6\%, 67.0\%]). It correctly identified all 18 vulnerable samples but failed on all 17 safe ones, including safe uses of bounds-checked \texttt{strncpy} and \texttt{snprintf}, an empty function body, pure arithmetic, and code whose only connection to vulnerability was the word ``flaw'' in a comment. This failure pattern is not noise. It is consistent across the entire safe portion of the evaluation and points directly at token-presence-based decision-making rather than contextual vulnerability reasoning.
-
-Scaling the out-of-distribution evaluation with samples drawn directly from published CVE patch histories would provide statistical power for performance estimation and confidence interval reporting across vulnerability categories. Semantic deduplication using code normalisation, variable renaming, and abstract syntax tree comparison would address the near-duplicate leakage that exact-string matching cannot reach. Replicating the structural artefact analysis on BigVul and Devign, and comparing directly against their reported figures, would test whether the identified properties are Juliet-specific or reflect broader patterns in synthetic and semi-synthetic vulnerability corpora.
-
-Re-evaluating Table~\ref{tab:model_results} with annotation-comment tokens stripped from the input, isolated from the length and naming artefacts, would quantify how much of the reported ceiling each artefact independently accounts for. The faithfulness experiment should be repeated with a model trained on balanced, artefact-controlled data; the class-biased model used here is not a valid candidate for perturbation-based faithfulness analysis. Completing the human utility evaluation of the generated explanations through a multi-reviewer study with Fleiss' $\kappa$ inter-rater agreement analysis would provide the empirical grounding needed to fully address the utility dimension of explanation reliability.
-
-Scores on the Juliet benchmark should not be used as evidence of real-world detection capability. The external evaluation methodology we describe takes a few hours to apply to any trained model, requires no additional labelled data, and immediately reveals whether the model has learned to detect vulnerabilities or merely to recognise the markers Juliet uses to label them.
+The out-of-distribution suite was designed to probe specific failure modes identified by the artifact analysis, not to provide a statistically powered estimate of general performance. Results from this suite should therefore be read as evidence of a consistent failure pattern rather than as a precise accuracy measurement.
 
 %=======================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+Transformer models achieve near-perfect scores on the Juliet C/C++ benchmark because three structural artifacts in the dataset make the two classes separable without any understanding of vulnerabilities: a fourfold code-length gap, the absence of function-name overlap across 42,005 identifiers, and annotation comments that embed explicit vulnerability labels in the training inputs and survive deduplication. A classifier that uses code length alone reaches 99.25 percent test accuracy, a bag-of-words Random Forest reaches 100.00 percent, and a 125-million-parameter graph-aware transformer does no better.
 
+On 35 hand-written out-of-distribution functions, the strongest transformer scored 51.4 percent, which cannot be distinguished from chance at this sample size (95 percent Wilson score confidence interval, 35.6 to 67.0 percent). It identified all 18 vulnerable functions but misclassified all 17 safe ones, including safe uses of bounds-checked \texttt{strncpy} and \texttt{snprintf}, an empty function body, a pure arithmetic statement, and code whose only connection to vulnerability was the word ``flaw'' in a comment. This pattern is consistent across the entire safe portion of the evaluation and points to a decision rule based on token presence rather than on the context in which those tokens are used.
+
+Several directions follow from these findings. Scaling the out-of-distribution evaluation with functions drawn directly from published CVE patch histories would provide the statistical power needed for interval estimates across weakness categories. Semantic deduplication based on code normalization, variable renaming, and abstract-syntax-tree comparison would address the near-duplicate leakage that exact-string matching cannot reach. Replicating the structural-artifact analysis on BigVul and Devign, and comparing directly with their reported figures, would test whether the identified properties are specific to Juliet. Recomputing Table~\ref{tab:model_results} with the annotation tokens removed would quantify how much of the ceiling each artifact independently explains, and the faithfulness experiment should be repeated with a model trained on balanced, artifact-controlled data, because a class-biased model is not a valid subject for perturbation-based faithfulness analysis.
+
+More broadly, scores on the Juliet benchmark should not be treated as evidence of real-world detection capability. The external evaluation described here can be applied to any trained model in a few hours, requires no additional labeled data, and shows directly whether a model has learned to detect vulnerabilities or only to recognize the markers that Juliet uses to label them.
+
+%=======================================================================
 \appendix
-
 \section{Supplementary Materials}
+Experiment configuration files, the preprocessed Juliet splits, and the trained model checkpoints are available at \url{https://github.com/smadhu6364-beep/csnet26-vuln-benchmark-artefact}.
 
-Experiment configuration files, preprocessed Juliet splits, and trained model checkpoints are available at \url{https://github.com/kj2578/csnet26-vuln-benchmark-artefacts}.
+%=======================================================================
+% NOTE: IEEE policy requires that AI-assisted or AI-generated text be
+% disclosed in the Acknowledgment. Edit the statement below to reflect
+% exactly how generative AI was used, or delete this section if no such
+% tool was used at any stage.
+\section*{Acknowledgment}
+The authors used a generative artificial intelligence system (Anthropic Claude) to assist with restructuring and language editing of this manuscript. All research design, experiments, data analysis, results, and conclusions are the authors' own. The authors reviewed and edited all AI-assisted text and take full responsibility for the content of the article.
 
 %=======================================================================
 \newpage
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 
-\begin{IEEEbiographynophoto}{Kruthik Jadhav}
-received the M.S. degree in Management and Systems from the Division of Programs in Business, School of Professional Studies, New York University, New York, NY, USA, in 2025.
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{jadhav.png}}]{Kruthik Jadhav}
+received the M.S. degree in management and systems from the Division of Programs in Business, School of Professional Studies, New York University, New York, NY, USA, in 2025.
 
-His research interests include machine learning security, automated vulnerability detection, and benchmark evaluation methodology for AI-based software analysis.
-\end{IEEEbiographynophoto}
+His research interests include machine learning security, automated vulnerability detection, and benchmark evaluation methodology for artificial-intelligence-based software analysis.
+\end{IEEEbiography}
 
-\begin{IEEEbiographynophoto}{Madhu Sudhan}
-received the B.E. degree in Computer Science and Engineering from Dayananda Sagar Institutions, Bengaluru, India, in 2023.
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{sudhan.png}}]{Madhu Sudhan}
+received the B.E. degree in computer science and engineering from Dayananda Sagar Institutions, Bengaluru, India, in 2023.
 
-His research interests include machine learning security, vulnerability detection, and benchmark evaluation for AI-based software analysis.
-\end{IEEEbiographynophoto}
+His research interests include machine learning security, vulnerability detection, and benchmark evaluation for artificial-intelligence-based software analysis.
+\end{IEEEbiography}
 
 \EOD
 

@@ -31,6 +31,17 @@ Practicum/*.out
 Practicum/*.fls
 Practicum/*.fdb_latexmk
 Practicum/*.synctex.gz
+Papers/*.aux
+Papers/*.log
+Papers/*.out
+Papers/*.bbl
+Papers/*.blg
+Papers/*.fls
+Papers/*.fdb_latexmk
+Papers/*.synctex.gz
+Papers/*.toc
+Papers/*.pdf
+Papers/build*.log
 
 # Models — too big for git
 *.pt
