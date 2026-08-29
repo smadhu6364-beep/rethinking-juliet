@@ -207,7 +207,6 @@ scripts = [
     "src/preprocessing/rebuild_splits_clean.py",
     "src/models/train_codebert.py",
     "src/models/train_graphcodebert.py",
-    "docs/rq3-design.md",
 ]
 for s in scripts:
     check_file(os.path.basename(s), s)
