@@ -42,6 +42,9 @@ Papers/*.synctex.gz
 Papers/*.toc
 Papers/*.pdf
 Papers/build*.log
+# stray pdftotext / compile scratch dumps
+Papers/out.txt
+Papers/*.log
 
 # Models — too big for git
 *.pt
