@@ -42,8 +42,8 @@
 
 \title{Rethinking Juliet: Structural Leakage and Benchmark Validity in Automated Vulnerability Detection}
 
-\author{\uppercase{Kruthik J.}\authorrefmark{1}, \IEEEmembership{Member, IEEE}, AND
-\uppercase{Madhu Sudhan S.}\authorrefmark{2}}
+\author{\uppercase{Kruthik Jadhav}\authorrefmark{1}, \IEEEmembership{Member, IEEE}, AND
+\uppercase{Madhu Sudhan}\authorrefmark{2}}
 
 \address[1]{New York University, New York, NY 10003 USA (e-mail: kj2578@nyu.edu)}
 \address[2]{Dayananda Sagar Academy of Technology and Management, Bengaluru, Karnataka 560078, India (e-mail: smadhu6364@gmail.com)}
@@ -51,10 +51,10 @@
 \tfootnote{This work was carried out as part of a graduate practicum project at New York University.}
 
 \markboth
-{Kruthik J. and Madhu Sudhan S.: Rethinking Juliet: Structural Leakage and Benchmark Validity in Automated Vulnerability Detection}
-{Kruthik J. and Madhu Sudhan S.: Rethinking Juliet: Structural Leakage and Benchmark Validity in Automated Vulnerability Detection}
+{Kruthik Jadhav and Madhu Sudhan: Rethinking Juliet: Structural Leakage and Benchmark Validity in Automated Vulnerability Detection}
+{Kruthik Jadhav and Madhu Sudhan: Rethinking Juliet: Structural Leakage and Benchmark Validity in Automated Vulnerability Detection}
 
-\corresp{Corresponding author: Kruthik J. (e-mail: kj2578@nyu.edu).}
+\corresp{Corresponding author: Kruthik Jadhav (e-mail: kj2578@nyu.edu).}
 
 \begin{abstract}
 Transformer-based models report near-perfect F1 scores on the Juliet Test Suite, which spans C, C++, Java, and C\#, yet whether those scores reflect genuine vulnerability-detection ability has not been examined carefully. This article trains and evaluates four models across all four languages: a term frequency--inverse document frequency Random Forest, CodeBERT, GraphCodeBERT, and a hybrid of the two transformers. All four score almost identically, so the analysis turns from the models to the dataset. On a leakage-controlled version of Juliet, vulnerable and safe functions can be separated by surface properties alone, namely a fourfold code-length gap, function names tied to Juliet's generation convention, and comments that state the demonstrated flaw in plain language. A classifier that uses code length as its only feature reaches 99.25 percent test accuracy. Two preprocessing bugs found mid-study, a labeling error and a name-and-comment leakage channel, were corrected and all four models retrained end to end; the F1 ceiling persisted. On 35 hand-written out-of-distribution functions the strongest model collapsed to a constant classifier that predicts vulnerable for every input, and re-running the test on a corrected, fully verified checkpoint moved the collapse to the opposite class rather than removing it. A perturbation test showed that the tokens the model appeared to use were not driving its decisions. These findings replicate across C/C++, Java, and C\#. Strong performance on Juliet therefore reflects structural shortcuts in the dataset, and independent out-of-distribution testing is needed before such scores are treated as evidence of real-world capability.
@@ -556,13 +556,13 @@ The authors acknowledge the use of artificial intelligence (AI) tools, specifica
 
 \end{thebibliography}
 
-\begin{IEEEbiographynophoto}{Kruthik J.}
+\begin{IEEEbiographynophoto}{Kruthik Jadhav}
 received the B.E. degree in computer science and engineering from Dayananda Sagar Academy of Technology and Management, Bengaluru, India, in 2023, and the M.S. degree in management and systems from the New York University School of Professional Studies, New York, NY, USA, in 2025.
 
 His research interests include automated software vulnerability detection, trustworthy artificial intelligence, machine learning evaluation, software security, benchmark reliability, and applied AI systems. He also serves as a peer reviewer for IEEE journals and conferences.
 \end{IEEEbiographynophoto}
 
-\begin{IEEEbiographynophoto}{Madhu Sudhan S.}
+\begin{IEEEbiographynophoto}{Madhu Sudhan}
 received the B.E. degree in computer science and engineering from Dayananda Sagar Academy of Technology and Management, Bengaluru, India, in 2023. He is currently pursuing the M.Sc. degree in business analytics with the DCU Business School, Dublin City University, Dublin, Ireland.
 
 His research interests include enterprise data architectures, applied machine learning, predictive analytics, statistical modeling, and data-driven strategic decision-making frameworks.
