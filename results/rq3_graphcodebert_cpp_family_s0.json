@@ -1,0 +1,54 @@
+{
+ "tag": "graphcodebert_cpp_family_s0",
+ "n": 1053,
+ "n_misclassified_in_test": 54,
+ "test_n": 10830,
+ "attn1": {
+  "mean_delta": 0.005056,
+  "flip_rate": 0.006648
+ },
+ "rand1": {
+  "mean_delta": 0.00083,
+  "flip_rate": 0.001899
+ },
+ "attn_minus_rand1": {
+  "mean": 0.004225,
+  "se": 0.001886
+ },
+ "attn3": {
+  "mean_delta": 0.023158,
+  "flip_rate": 0.019943
+ },
+ "rand3": {
+  "mean_delta": 0.003359,
+  "flip_rate": 0.002849
+ },
+ "attn_minus_rand3": {
+  "mean": 0.019799,
+  "se": 0.004255
+ },
+ "attn5": {
+  "mean_delta": 0.825536,
+  "flip_rate": 0.82811
+ },
+ "rand5": {
+  "mean_delta": 0.007598,
+  "flip_rate": 0.007597
+ },
+ "attn_minus_rand5": {
+  "mean": 0.817938,
+  "se": 0.01135
+ },
+ "attn10": {
+  "mean_delta": 0.761775,
+  "flip_rate": 0.757835
+ },
+ "rand10": {
+  "mean_delta": 0.016821,
+  "flip_rate": 0.016144
+ },
+ "attn_minus_rand10": {
+  "mean": 0.744955,
+  "se": 0.012929
+ }
+}

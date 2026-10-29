@@ -1,0 +1,212 @@
+[
+ {
+  "id": "A01_strcpy_overflow",
+  "category": "juliet_style",
+  "label": 1,
+  "code": "void processInput(char *userInput) {\n    char buffer[16];\n    strcpy(buffer, userInput);\n    printf(\"Processed: %s\\n\", buffer);\n}"
+ },
+ {
+  "id": "A02_gets_overflow",
+  "category": "juliet_style",
+  "label": 1,
+  "code": "void readName(void) {\n    char name[32];\n    gets(name);\n    printf(\"Hello %s\\n\", name);\n}"
+ },
+ {
+  "id": "A03_sprintf_overflow",
+  "category": "juliet_style",
+  "label": 1,
+  "code": "void formatMessage(char *user) {\n    char msg[24];\n    sprintf(msg, \"Welcome back, %s!\", user);\n    puts(msg);\n}"
+ },
+ {
+  "id": "A04_system_injection",
+  "category": "juliet_style",
+  "label": 1,
+  "code": "void runCommand(char *filename) {\n    char cmd[128];\n    sprintf(cmd, \"cat %s\", filename);\n    system(cmd);\n}"
+ },
+ {
+  "id": "A05_int_overflow_alloc",
+  "category": "juliet_style",
+  "label": 1,
+  "code": "void allocateItems(int count) {\n    int size = count * sizeof(int);\n    int *arr = (int *)malloc(size);\n    for (int i = 0; i < count; i++) arr[i] = i;\n    free(arr);\n}"
+ },
+ {
+  "id": "A06_strcat_overflow",
+  "category": "juliet_style",
+  "label": 1,
+  "code": "void appendPath(char *dir, char *file) {\n    char fullpath[64];\n    strcpy(fullpath, dir);\n    strcat(fullpath, \"/\");\n    strcat(fullpath, file);\n    fopen(fullpath, \"r\");\n}"
+ },
+ {
+  "id": "A07_memcpy_overflow",
+  "category": "juliet_style",
+  "label": 1,
+  "code": "void copyPacket(char *data, int len) {\n    char packet[256];\n    memcpy(packet, data, len);\n    parsePacket(packet);\n}"
+ },
+ {
+  "id": "A08_scanf_overflow",
+  "category": "juliet_style",
+  "label": 1,
+  "code": "void readInput(void) {\n    char buf[20];\n    scanf(\"%s\", buf);\n    process(buf);\n}"
+ },
+ {
+  "id": "A09_int_underflow",
+  "category": "juliet_style",
+  "label": 1,
+  "code": "void decrementCounter(unsigned int n) {\n    unsigned int counter = 0;\n    counter = counter - n;\n    allocateBuffer(counter);\n}"
+ },
+ {
+  "id": "A10_use_after_free",
+  "category": "juliet_style",
+  "label": 1,
+  "code": "void handleData(void) {\n    char *data = (char *)malloc(64);\n    strcpy(data, \"payload\");\n    free(data);\n    printf(\"%s\\n\", data);\n}"
+ },
+ {
+  "id": "B01_format_string",
+  "category": "real_world",
+  "label": 1,
+  "code": "void logMessage(char *userMsg) {\n    FILE *log = fopen(\"app.log\", \"a\");\n    fprintf(log, userMsg);\n    fclose(log);\n}"
+ },
+ {
+  "id": "B02_toctou_race",
+  "category": "real_world",
+  "label": 1,
+  "code": "void writeConfig(char *path) {\n    if (access(path, W_OK) == 0) {\n        FILE *f = fopen(path, \"w\");\n        fputs(\"config=1\", f);\n        fclose(f);\n    }\n}"
+ },
+ {
+  "id": "B03_path_traversal",
+  "category": "real_world",
+  "label": 1,
+  "code": "void serveFile(char *requested) {\n    char path[256];\n    snprintf(path, sizeof(path), \"/var/www/%s\", requested);\n    FILE *f = fopen(path, \"r\");\n    sendContents(f);\n}"
+ },
+ {
+  "id": "B04_off_by_one",
+  "category": "real_world",
+  "label": 1,
+  "code": "void copyString(char *src) {\n    char dest[16];\n    int i;\n    for (i = 0; i <= 16 && src[i] != '\\0'; i++)\n        dest[i] = src[i];\n    dest[i] = '\\0';\n}"
+ },
+ {
+  "id": "B05_null_deref",
+  "category": "real_world",
+  "label": 1,
+  "code": "void processRecord(int id) {\n    Record *r = lookupRecord(id);\n    printf(\"Name: %s\\n\", r->name);\n    updateTimestamp(r);\n}"
+ },
+ {
+  "id": "B06_double_free",
+  "category": "real_world",
+  "label": 1,
+  "code": "void cleanup(char *buf, int error) {\n    if (error) {\n        free(buf);\n        logError(error);\n    }\n    free(buf);\n}"
+ },
+ {
+  "id": "B07_signed_unsigned",
+  "category": "real_world",
+  "label": 1,
+  "code": "void readChunk(int len, char *src) {\n    char chunk[512];\n    if (len < 512) {\n        memcpy(chunk, src, len);\n    }\n}"
+ },
+ {
+  "id": "B08_unchecked_malloc",
+  "category": "real_world",
+  "label": 1,
+  "code": "void storeValue(int val) {\n    int *slot = (int *)malloc(sizeof(int));\n    *slot = val;\n    registerSlot(slot);\n}"
+ },
+ {
+  "id": "C01_safe_fgets",
+  "category": "safe_lookalike",
+  "label": 0,
+  "code": "void read_line(FILE *fp) {\n    char buf[64];\n    if (fgets(buf, sizeof(buf), fp) != NULL)\n        printf(\"%s\", buf);\n}"
+ },
+ {
+  "id": "C02_safe_strncpy",
+  "category": "safe_lookalike",
+  "label": 0,
+  "code": "void copyName(char *src) {\n    char dest[32];\n    strncpy(dest, src, sizeof(dest) - 1);\n    dest[sizeof(dest) - 1] = '\\0';\n    printf(\"%s\\n\", dest);\n}"
+ },
+ {
+  "id": "C03_safe_snprintf",
+  "category": "safe_lookalike",
+  "label": 0,
+  "code": "void buildGreeting(char *user) {\n    char msg[64];\n    snprintf(msg, sizeof(msg), \"Hello, %s!\", user);\n    puts(msg);\n}"
+ },
+ {
+  "id": "C04_safe_memcpy_checked",
+  "category": "safe_lookalike",
+  "label": 0,
+  "code": "void copyData(char *src, size_t len) {\n    char dest[128];\n    if (len > sizeof(dest)) len = sizeof(dest);\n    memcpy(dest, src, len);\n    process(dest, len);\n}"
+ },
+ {
+  "id": "C05_safe_strcpy_constant",
+  "category": "safe_lookalike",
+  "label": 0,
+  "code": "void setDefault(void) {\n    char status[16];\n    strcpy(status, \"OK\");\n    logStatus(status);\n}"
+ },
+ {
+  "id": "C06_safe_malloc_checked",
+  "category": "safe_lookalike",
+  "label": 0,
+  "code": "int *createArray(size_t n) {\n    if (n == 0 || n > 1024) return NULL;\n    int *arr = (int *)malloc(n * sizeof(int));\n    if (arr == NULL) return NULL;\n    memset(arr, 0, n * sizeof(int));\n    return arr;\n}"
+ },
+ {
+  "id": "C07_safe_free_once",
+  "category": "safe_lookalike",
+  "label": 0,
+  "code": "void releaseBuffer(char *buf) {\n    if (buf != NULL) {\n        free(buf);\n        buf = NULL;\n    }\n}"
+ },
+ {
+  "id": "C08_safe_scanf_width",
+  "category": "safe_lookalike",
+  "label": 0,
+  "code": "void readToken(void) {\n    char token[20];\n    if (scanf(\"%19s\", token) == 1)\n        handleToken(token);\n}"
+ },
+ {
+  "id": "C09_safe_strcat_bounded",
+  "category": "safe_lookalike",
+  "label": 0,
+  "code": "void joinPath(char *dir, char *file) {\n    char path[256];\n    snprintf(path, sizeof(path), \"%s/%s\", dir, file);\n    if (strstr(path, \"..\") == NULL)\n        openFile(path);\n}"
+ },
+ {
+  "id": "C10_safe_fprintf_literal",
+  "category": "safe_lookalike",
+  "label": 0,
+  "code": "void logEvent(char *event) {\n    FILE *log = fopen(\"events.log\", \"a\");\n    if (log != NULL) {\n        fprintf(log, \"%s\\n\", event);\n        fclose(log);\n    }\n}"
+ },
+ {
+  "id": "D01_empty_function",
+  "category": "trick",
+  "label": 0,
+  "code": "void noop(void) {\n}"
+ },
+ {
+  "id": "D02_pure_arithmetic",
+  "category": "trick",
+  "label": 0,
+  "code": "int computeSum(int a, int b) {\n    int result = a + b;\n    return result * 2;\n}"
+ },
+ {
+  "id": "D03_string_constants",
+  "category": "trick",
+  "label": 0,
+  "code": "const char *getVersion(void) {\n    return \"v2.1.0-release\";\n}"
+ },
+ {
+  "id": "D04_simple_getter",
+  "category": "trick",
+  "label": 0,
+  "code": "int getCount(const Counter *c) {\n    return c != NULL ? c->count : 0;\n}"
+ },
+ {
+  "id": "D05_boolean_logic",
+  "category": "trick",
+  "label": 0,
+  "code": "int isValid(int age, int score) {\n    return (age >= 18) && (score > 0) && (score <= 100);\n}"
+ },
+ {
+  "id": "D06_loop_counter",
+  "category": "trick",
+  "label": 0,
+  "code": "int countEven(const int *arr, int n) {\n    int count = 0;\n    for (int i = 0; i < n; i++)\n        if (arr[i] % 2 == 0) count++;\n    return count;\n}"
+ },
+ {
+  "id": "D07_comment_flaw_word",
+  "category": "trick",
+  "label": 0,
+  "code": "int max(int a, int b) {\n    /* No flaw here, just returns the larger value */\n    return a > b ? a : b;\n}"
+ }
+]
