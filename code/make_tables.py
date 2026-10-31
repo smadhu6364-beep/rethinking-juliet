@@ -243,7 +243,7 @@ for l, name in (("cpp", "C/C++"), ("java", "Java")):
     rf = (pm(x["random"]["rf_sanitized"]), pm(x["family"]["rf_sanitized"]),
           pm(x["family"]["rf_full_train_on_len_matched_test"]), pm(x["family"]["rf_sanitized"], "acc")) if x else (MISSING,) * 4
     lines.append(f"{name} & Random Forest & " + " & ".join(rf) + r" \\")
-    for m, lab in (("codebert", "CodeBERT"), ("graphcodebert", "GraphCodeBERT")):
+    for m, lab in (("codebert", "CodeBERT"), ("graphcodebert", "GraphCodeBERT (token-only)")):
         rr, rf_ = ft_runs(m, l, "random"), ft_runs(m, l, "family")
         fam_f1[(m, l)] = col(rf_, "test")
         lines.append(f" & {lab} & {ms(col(rr, 'test')) if rr else '--'} & {ms(col(rf_, 'test'))} & "
@@ -296,7 +296,7 @@ lines = [r"\begin{table*}[t]", r"\centering",
 dev_f1 = []
 rfx = load("rf_external_cpp.json")
 ext_rows = [("Random Forest", rfx["runs"] if rfx else [])]
-for m, lab in (("codebert", "CodeBERT"), ("graphcodebert", "GraphCodeBERT")):
+for m, lab in (("codebert", "CodeBERT"), ("graphcodebert", "GraphCodeBERT (token-only)")):
     ext_rows.append((lab, ft_runs(m, "cpp", "family")))
 ext_rows.append(("Hybrid (frozen)", hy_runs("cpp", "family")))
 for lab, runs in ext_rows:
@@ -308,8 +308,10 @@ for lab, runs in ext_rows:
     pv = [r["devign"]["tp"] + r["devign"]["fp"] for r in runs]
     cells = [ms(col(runs, "devign", "acc")), ms(col(runs, "devign")), f"{np.mean(pv) / 2732:.0%}".replace("%", r"\%")]
     if "ood35_by_category" not in runs[0] and "ood35" in runs[0]:
-        tot = np.mean([r["ood35"]["tn"] + r["ood35"]["tp"] for r in runs])
-        cells.append(f"\\multicolumn{{4}}{{c}}{{{tot:.1f} / 35 in total}}")
+        tp_ = np.mean([r["ood35"]["tp"] for r in runs])
+        tn_ = np.mean([r["ood35"]["tn"] for r in runs])
+        cells.append(f"\\multicolumn{{2}}{{c}}{{{tp_:.1f} / 18 vulnerable}}")
+        cells.append(f"\\multicolumn{{2}}{{c}}{{{tn_:.1f} / 17 safe}}")
     elif "ood35_by_category" in runs[0]:
         for cat in cats:
             vals = [r["ood35_by_category"].get(cat, {}).get("correct", 0) for r in runs]
@@ -320,7 +322,7 @@ for lab, runs in ext_rows:
     lines.append(f"{lab} & " + " & ".join(cells) + r" \\")
 lines += [r"\bottomrule", r"\end{tabular}", "",
           r"\vspace{2pt}{\footnotesize Means over seeds. Devign F1 of a constant all-vulnerable classifier: 0.630. "
-          r"Diagnostic suite counts are averaged over seeds; for the hybrid only the total was recorded.}", r"\end{table*}"]
+          r"Diagnostic suite counts are averaged over seeds; for the hybrid only the confusion matrix was recorded, so its results are split into vulnerable and safe functions.}", r"\end{table*}"]
 (REV / "tab_external.tex").write_text("\n".join(lines))
 macros["DevMinF"] = f3(min(dev_f1)) if dev_f1 else MISSING
 macros["DevMaxF"] = f3(max(dev_f1)) if dev_f1 else MISSING
@@ -333,7 +335,7 @@ lines = [r"\begin{table}[t]", r"\centering",
          r"\cmidrule(lr){3-4}\cmidrule(lr){5-6}",
          r"\textbf{Model} & $k$ & \textbf{Attn.} & \textbf{Rand.} & \textbf{Attn.} & \textbf{Rand.} \\", r"\midrule"]
 cmp_words = []
-for m, lab in (("codebert", "CodeBERT"), ("graphcodebert", "GraphCodeBERT")):
+for m, lab in (("codebert", "CodeBERT"), ("graphcodebert", "GraphCodeBERT (token-only)")):
     x = load(f"rq3_{m}_cpp_family_s0.json")
     for k in (1, 3, 5, 10):
         if x:
@@ -355,7 +357,7 @@ lines = [r"\begin{table}[t]", r"\centering",
          r"\textbf{Lang.} & \textbf{Model} & \textbf{Q1} & \textbf{Q2} & \textbf{Q3} & \textbf{Q4} & \textbf{Q5} \\",
          r"\midrule"]
 for l, name in (("cpp", "C/C++"), ("java", "Java")):
-    for m, lab in (("codebert", "CodeBERT"), ("graphcodebert", "GraphCodeBERT")):
+    for m, lab in (("codebert", "CodeBERT"), ("graphcodebert", "GraphCodeBERT (token-only)")):
         runs = ft_runs(m, l, "family")
         if runs:
             cells = [f3(np.mean([r["test_by_len_quintile"][str(q)]["acc"] for r in runs])) for q in range(5)]
@@ -407,7 +409,15 @@ for l in ("cpp", "java"):
     cells = [f"{k.split('-')[1]}: {int(cov.loc[k, vc].sum())}/{int(cov.loc[k, sc].sum())}" for k in keys]
     (REV / f"app_cwe_{l}.tex").write_text("; ".join(cells) + ".")
 
-macros["RepoURL"] = "https://github.com/smadhu6364-beep/rethinking-juliet"
+# shrink any table wider than its column (or page, for table*) to fit
+for f in REV.glob("tab_*.tex"):
+    t = f.read_text()
+    if "adjustbox" not in t:
+        t = t.replace(r"\begin{tabular}", r"\begin{adjustbox}{max width=\linewidth}\begin{tabular}")
+        t = t.replace(r"\end{tabular}", r"\end{tabular}\end{adjustbox}")
+        f.write_text(t)
+
+macros["RepoURL"] ="https://github.com/smadhu6364-beep/rethinking-juliet"
 
 missing = sorted(k for k, v in macros.items() if v == MISSING)
 body = "\n".join(f"\\newcommand{{\\{k}}}{{{v}}}" for k, v in sorted(macros.items()))
